@@ -6,9 +6,8 @@ import type { NextRequest } from 'next/server'
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-
   if (code) {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -25,6 +24,5 @@ export async function GET(request: NextRequest) {
     )
     await supabase.auth.exchangeCodeForSession(code)
   }
-
   return NextResponse.redirect(origin)
 }
