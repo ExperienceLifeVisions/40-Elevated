@@ -17,7 +17,7 @@ export default function AuthScreen() {
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: {
-        emailRedirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : 'https://75elevated.com/auth/callback',
+        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : 'https://75elevated.com',
       },
     })
     if (error) { setError(error.message); setLoading(false) }
