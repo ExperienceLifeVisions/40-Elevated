@@ -35,7 +35,6 @@ export default function TodayTab({
 
   return (
     <div id="tab-today">
-      {/* Install banner */}
       <div className="install-row" id="install-row">
         <div className="install-row-icon">📲</div>
         <div className="install-row-text">
@@ -45,7 +44,6 @@ export default function TodayTab({
         <button type="button" className="install-row-btn" onClick={onShowInstall}>How →</button>
       </div>
 
-      {/* Verse banner */}
       {currentVerse && (
         <div className="verse-banner visible">
           <div className="verse-banner-text">{currentVerse.verse}</div>
@@ -53,7 +51,6 @@ export default function TodayTab({
         </div>
       )}
 
-      {/* Day navigation */}
       <div className="day-nav">
         <button className="nav-btn" onClick={() => onChangeDay(Math.max(1, curDay - 1))}>‹</button>
         <div className="week-header">
@@ -63,7 +60,6 @@ export default function TodayTab({
         <button className="nav-btn" onClick={() => onChangeDay(Math.min(75, curDay + 1))}>›</button>
       </div>
 
-      {/* Progress */}
       <div style={{ marginBottom: 16 }}>
         <div className="prog-bar-wrap">
           <div className="prog" style={{ width: `${pct}%` }} />
@@ -76,7 +72,6 @@ export default function TodayTab({
         </div>
       </div>
 
-      {/* Commitments */}
       <div className="commitments" id="commitments-list">
         {COMMITMENTS.map(c => {
           const checked = !!dayCompletions[c.id]
@@ -102,8 +97,6 @@ export default function TodayTab({
       </div>
 
       <button className="reset-btn" onClick={() => {
-        // Reset just clears the UI optimistically — actual reset would delete from Supabase
-        // For now show confirmation
         if (confirm('Reset today\'s commitments?')) {
           COMMITMENTS.forEach(c => {
             if (dayCompletions[c.id]) onToggle(curDay, c.id)
@@ -112,7 +105,7 @@ export default function TodayTab({
       }}>reset today</button>
 
       <button type="button" className="back-to-standard" onClick={onReturnToStandard}>
-        Return to The Standard
+        ← The Standard
       </button>
     </div>
   )
