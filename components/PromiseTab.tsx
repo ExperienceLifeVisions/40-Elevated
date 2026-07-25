@@ -1,6 +1,5 @@
 'use client'
 import { PROMISE_TEXT } from '../lib/data'
-
 export default function PromiseTab({ onReturnToStandard }: { onReturnToStandard: () => void }) {
   return (
     <div id="tab-promise">
@@ -16,7 +15,7 @@ export default function PromiseTab({ onReturnToStandard }: { onReturnToStandard:
         </div>
       </div>
       <button type="button" className="back-to-standard" onClick={onReturnToStandard}>
-        Return to The Standard
+        ← The Standard
       </button>
     </div>
   )
