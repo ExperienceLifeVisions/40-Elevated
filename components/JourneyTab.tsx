@@ -1,6 +1,5 @@
 'use client'
 import { COMMITMENTS, dayNumber } from '../lib/data'
-
 interface Props {
   startDate: Date
   completions: Record<string, Record<string, boolean>>
@@ -8,7 +7,6 @@ interface Props {
   onSelectDay: (day: number) => void
   onReturnToStandard: () => void
 }
-
 export default function JourneyTab({ startDate, completions, todayNum, onSelectDay, onReturnToStandard }: Props) {
   const streak = (() => {
     let s = 0
@@ -19,12 +17,10 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
     }
     return s
   })()
-
   const daysComplete = Array.from({ length: 75 }, (_, i) => i + 1).filter(d => {
     const dc = completions[d] || {}
     return COMMITMENTS.every(c => dc[c.id])
   }).length
-
   return (
     <div id="tab-journey">
       <div className="stats-row">
@@ -41,7 +37,6 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
           <div className="stat-label">Remaining</div>
         </div>
       </div>
-
       <div className="grid" id="grid">
         {Array.from({ length: 75 }, (_, i) => i + 1).map(d => {
           const dc = completions[d] || {}
@@ -59,15 +54,13 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
           )
         })}
       </div>
-
       <div className="legend">
         <div className="legend-item"><div className="legend-dot done" />Complete</div>
         <div className="legend-item"><div className="legend-dot partial" />Partial</div>
         <div className="legend-item"><div className="legend-dot" />Upcoming</div>
       </div>
-
       <button type="button" className="back-to-standard" onClick={onReturnToStandard}>
-        Return to The Standard
+        ← The Standard
       </button>
     </div>
   )
