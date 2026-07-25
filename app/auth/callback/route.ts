@@ -1,40 +1,10 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// No longer used for the primary sign-in flow (which now uses Supabase's
+// implicit flow and redirects straight to the site root). Kept as a safe
+// fallback in case anything old still links here.
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
-  const code = searchParams.get('code')
-
-  console.log('[auth/callback] hit. code present:', !!code, 'origin:', origin)
-
-  if (code) {
-    const cookieStore = cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll() },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          },
-        },
-      }
-    )
-    console.log('[auth/callback] calling exchangeCodeForSession...')
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-    if (error) {
-      console.log('[auth/callback] exchange FAILED:', error.message)
-    } else {
-      console.log('[auth/callback] exchange SUCCESS. user:', data?.user?.email)
-    }
-  } else {
-    console.log('[auth/callback] no code param on request — skipping exchange')
-  }
-
+  const { origin } = new URL(request.url)
   return NextResponse.redirect(origin)
 }
