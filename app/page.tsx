@@ -11,10 +11,26 @@ export default function Home() {
   const supabase = createClient()
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-      setLoading(false)
-    })
+    supabase.auth.getUser()
+      .then(({ data: { user }, error }) => {
+        if (error) {
+          // Session is stale, expired, or points to a user that no longer
+          // exists. Clear it out and treat this as a normal logged-out state
+          // rather than letting the error crash the app.
+          supabase.auth.signOut().catch(() => {})
+          setUser(null)
+        } else {
+          setUser(user)
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        // Network hiccup or an auth error that threw instead of resolving.
+        // Same treatment: fall back to logged-out, never crash.
+        supabase.auth.signOut().catch(() => {})
+        setUser(null)
+        setLoading(false)
+      })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
