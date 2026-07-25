@@ -17,7 +17,6 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
 
   return (
     <div id="tab-weekly">
-      {/* Week navigation */}
       <div className="week-nav">
         <button className="nav-btn" onClick={() => onChangeWeek(Math.max(1, curWeek - 1))}>‹</button>
         <div className="week-header" style={{ marginBottom: 0 }}>
@@ -27,7 +26,6 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
         <button className="nav-btn" onClick={() => onChangeWeek(Math.min(11, curWeek + 1))}>›</button>
       </div>
 
-      {/* Fruit of the Spirit card */}
       {fruit && (
         <div className="fruit-card">
           <div className="fruit-eyebrow">{fruit.eyebrow}</div>
@@ -71,7 +69,6 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
         </div>
       )}
 
-      {/* Weekly practices */}
       <div className="section-label">Weekly practices</div>
       <div className="weekly-cards" id="weekly-cards">
         {WEEKLY_COMMITMENTS.map(c => {
@@ -101,7 +98,6 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
         })}
       </div>
 
-      {/* 11-week grid */}
       <div className="section-label">All 11 weeks</div>
       <div className="weekly-weeks" id="weekly-weeks">
         {Array.from({ length: 11 }, (_, i) => i + 1).map(w => (
@@ -116,7 +112,7 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
       </div>
 
       <button type="button" className="back-to-standard" onClick={onReturnToStandard}>
-        Return to The Standard
+        ← The Standard
       </button>
     </div>
   )
