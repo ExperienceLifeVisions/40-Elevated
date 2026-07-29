@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-const APP_URL = 'https://75elevated.com'
+const APP_URL = 'https://40elevated.com'
 
 export default function ShareModal({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false)
@@ -31,7 +31,7 @@ export default function ShareModal({ onClose }: { onClose: () => void }) {
 
   function nativeShare() {
     if (navigator.share) {
-      navigator.share({ title: '40 Elevated', text: 'A Walk With Jesus — 40 days of spiritual discipline', url: APP_URL })
+      navigator.share({ title: '40 Elevated', text: 'A Walk With Christ, 40 days of spiritual discipline', url: APP_URL })
     }
   }
 
@@ -43,7 +43,7 @@ export default function ShareModal({ onClose }: { onClose: () => void }) {
         <div className="share-modal-sub">Scan to begin your walk with Christ</div>
         <div id="qr-code" className="qr-wrap" />
         <div className="share-url-row">
-          <span className="share-url-text">75elevated.com</span>
+          <span className="share-url-text">40elevated.com</span>
           <button type="button" className={`share-copy-btn ${copied ? 'copied' : ''}`} onClick={copyUrl}>
             {copied ? 'Copied!' : 'Copy'}
           </button>
