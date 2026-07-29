@@ -9,7 +9,7 @@ export default function StandardScreen({ onBegin, onShowNourish, hasStarted }: P
   return (
     <div className="standard-screen" id="standard-screen">
       <div className="standard-inner">
-        <img src="/logo.png" alt="75 Elevated" className="standard-logo" />
+        <img src="/logo.png" alt="40 Elevated" className="standard-logo" />
 
         <div className="standard-verse">
           "Come near to God and He will come near to you."
@@ -22,13 +22,13 @@ export default function StandardScreen({ onBegin, onShowNourish, hasStarted }: P
           This is a declaration that Jesus Christ is worth every sacrifice your flesh resists.
         </div>
         <div className="standard-intro">
-          Most people give their best to everything except God. Their discipline goes to their body. Their focus goes to their career. Their mornings go to their phone. 75 Elevated is a deliberate interruption. For 75 days you will redirect your first and your best toward the One who gave you everything.
+          Most people give their best to everything except God. Their discipline goes to their body. Their focus goes to their career. Their mornings go to their phone. 40 Elevated is a deliberate interruption. For 40 days you will redirect your first and your best toward the One who gave you everything.
         </div>
 
         <div className="standard-purpose">
           <p>This standard exists because a half-committed life produces a half-transformed soul. You were not saved to stay the same.</p>
           <p>You were called to become a disciple. And disciples make disciples.</p>
-          <p>75 Elevated: A Walk With Jesus is the training ground. Every morning surrendered, every meal chosen with intention, every fast, every prayer, every rep, every Word read and carried — it is all formation. It is God shaping you from the inside out into someone whose life points others toward Christ.</p>
+          <p>40 Elevated: A Walk With Jesus is the training ground. Every morning surrendered, every meal chosen with intention, every fast, every prayer, every rep, every Word read and carried — it is all formation. It is God shaping you from the inside out into someone whose life points others toward Christ.</p>
           <p>The world does not need more people who know about Jesus. It needs more people who look like Him.</p>
           <p>This is how it starts. One day. One commitment. One walk.</p>
         </div>
