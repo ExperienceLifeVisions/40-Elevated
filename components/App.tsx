@@ -15,6 +15,7 @@ import ShareModal from './ShareModal'
 import InstallScreen from './InstallScreen'
 import NourishScreen from './NourishScreen'
 import DayCompleteScreen from './DayCompleteScreen'
+import HelpScreen from './HelpScreen'
 
 type Tab = 'today' | 'weekly' | 'journey' | 'promise'
 
@@ -41,6 +42,7 @@ export default function App({ user }: AppProps) {
   const [showInstall, setShowInstall] = useState(false)
   const [showNourish, setShowNourish] = useState(false)
   const [showDayComplete, setShowDayComplete] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
   const [completedDay, setCompletedDay] = useState(1)
   const [loading, setLoading] = useState(true)
 
@@ -250,10 +252,19 @@ export default function App({ user }: AppProps) {
         {activeTab === 'promise' && (
           <PromiseTab onReturnToStandard={() => setShowStandard(true)} />
         )}
+
+        <button type="button" className="help-trigger" onClick={() => setShowHelp(true)}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m2 7 10 6 10-6" />
+          </svg>
+          <span>Help?</span>
+        </button>
       </div>
 
       {showShare && <ShareModal onClose={() => setShowShare(false)} />}
       {showInstall && <InstallScreen onClose={() => setShowInstall(false)} />}
+      {showHelp && <HelpScreen onClose={() => setShowHelp(false)} />}
       {showNourish && (
         <NourishScreen
           approach={profile.nutrition_approach || ''}
@@ -268,6 +279,11 @@ export default function App({ user }: AppProps) {
           onClose={() => setShowDayComplete(false)}
         />
       )}
+
+      <style>{`
+        .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .help-trigger:active { border-color: rgba(196,30,30,0.4); color: #e33; }
+      `}</style>
     </div>
   )
 }
