@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import ServiceWorkerRegister from '../components/ServiceWorkerRegister'
 
 export const metadata: Metadata = {
-  title: '75 Elevated',
-  description: 'A Walk With Jesus — 75 days of spiritual discipline',
+  title: '40 Elevated',
+  description: 'A Walk With Jesus — 40 days of spiritual discipline',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: '75 Elevated',
+    title: '40 Elevated',
   },
 }
 
@@ -26,7 +27,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
       </head>
-      <body>{children}</body>
+      <body>
+        <ServiceWorkerRegister />
+        {children}
+      </body>
     </html>
   )
 }
