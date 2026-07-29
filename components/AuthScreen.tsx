@@ -28,7 +28,7 @@ export default function AuthScreen() {
     <div className="auth-screen">
       <div className="auth-inner">
         <div className="auth-logo-wrap">
-          <img src="/logo.png" alt="75 Elevated" style={{ width: 200, height: 'auto', display: 'block', margin: '0 auto 12px' }} />
+          <img src="/logo.png" alt="40 Elevated" style={{ width: 200, height: 'auto', display: 'block', margin: '0 auto 12px' }} />
           <div className="auth-logo-sub">A Walk With Jesus</div>
         </div>
 
@@ -51,7 +51,7 @@ export default function AuthScreen() {
                 {loading ? 'Sending...' : 'Send sign-in link'}
               </button>
             </form>
-            <div className="auth-footer">CTC Cabo — 75 Elevated</div>
+            <div className="auth-footer">CTC Cabo — 40 Elevated</div>
           </>
         ) : (
           <div className="auth-sent">
