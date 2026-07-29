@@ -17,7 +17,7 @@ export default function AuthScreen() {
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: {
-        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : 'https://75elevated.com',
+        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : 'https://40elevated.com',
       },
     })
     if (error) { setError(error.message); setLoading(false) }
@@ -50,7 +50,7 @@ export default function AuthScreen() {
                 {loading ? 'Sending...' : 'Send sign-in link'}
               </button>
             </form>
-            <div className="auth-footer">CTC Cabo — 40 Elevated</div>
+            <div className="auth-footer">CTC Cabo, 40 Elevated</div>
           </>
         ) : (
           <div className="auth-sent">
