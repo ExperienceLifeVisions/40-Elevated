@@ -1,6 +1,8 @@
 'use client'
 import { COMMITMENTS, APPROACH_NAMES, formatDate, PROGRAM_DAYS } from '../lib/data'
 
+interface Verse { verse: string; ref: string }
+
 interface Props {
   curDay: number
   todayNum: number
@@ -11,7 +13,7 @@ interface Props {
   onChangeDay: (day: number) => void
   onShowInstall: () => void
   onReturnToStandard: () => void
-  weeklyVerses: { week: number; verse: string; ref: string }[]
+  weeklyVerses: Verse[]
   weekNum: number
 }
 
@@ -28,7 +30,7 @@ export default function TodayTab({
   function getNourishDesc() {
     if (nutritionApproach && APPROACH_NAMES[nutritionApproach]) {
       const name = APPROACH_NAMES[nutritionApproach]
-      return `${name.charAt(0).toUpperCase() + name.slice(1)} — honoring the temple God entrusted to me.`
+      return `${name.charAt(0).toUpperCase() + name.slice(1)}, honoring the temple God entrusted to me.`
     }
     return 'Every meal is an act of stewardship. Choose with intention.'
   }
@@ -53,9 +55,9 @@ export default function TodayTab({
 
       <div className="day-nav">
         <button className="nav-btn" onClick={() => onChangeDay(Math.max(1, curDay - 1))}>‹</button>
-        <div className="week-header">
-          <div className="week-number">Day <span>{curDay}</span></div>
-          <div className="week-range">{formatDate(startDate, curDay)}</div>
+        <div className="day-center">
+          <div className="day-number">Day <span>{curDay}</span></div>
+          <div className="day-date">{formatDate(startDate, curDay)}</div>
         </div>
         <button className="nav-btn" onClick={() => onChangeDay(Math.min(PROGRAM_DAYS, curDay + 1))}>›</button>
       </div>
@@ -72,37 +74,28 @@ export default function TodayTab({
         </div>
       </div>
 
-      <div className="commitments" id="commitments-list">
+      <div className="commitments">
         {COMMITMENTS.map(c => {
-          const checked = !!dayCompletions[c.id]
-          const desc = c.id === 'nutrition' ? getNourishDesc() : c.desc
+          const isDone = !!dayCompletions[c.id]
           return (
             <div
               key={c.id}
-              className={`commitment ${checked ? 'done' : ''} ${isFuture ? 'future-day' : ''}`}
+              className={`commitment ${isDone ? 'done' : ''} ${isFuture ? 'future-day' : ''}`}
               onClick={() => !isFuture && onToggle(curDay, c.id)}
             >
               <div className="check">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
               <div>
                 <div className="commit-title">{c.title}</div>
-                <div className="commit-desc">{desc}</div>
+                <div className="commit-desc">{c.id === 'nourish' ? getNourishDesc() : c.desc}</div>
               </div>
             </div>
           )
         })}
       </div>
-
-      <button className="reset-btn" onClick={() => {
-        if (confirm('Reset today\'s commitments?')) {
-          COMMITMENTS.forEach(c => {
-            if (dayCompletions[c.id]) onToggle(curDay, c.id)
-          })
-        }
-      }}>reset today</button>
 
       <button type="button" className="back-to-standard" onClick={onReturnToStandard}>
         ← The Standard
