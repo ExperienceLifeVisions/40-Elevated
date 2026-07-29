@@ -4,7 +4,7 @@ export default function PromiseTab({ onReturnToStandard }: { onReturnToStandard:
   return (
     <div id="tab-promise">
       <div className="promise-card">
-        <div className="promise-eyebrow">The 75 Elevated Promise</div>
+        <div className="promise-eyebrow">The 40 Elevated Promise</div>
         <div className="promise-text">
           {PROMISE_TEXT.split('\n').map((line, i) => (
             <span key={i}>
