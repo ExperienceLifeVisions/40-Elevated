@@ -1,5 +1,6 @@
 'use client'
 import { COMMITMENTS, dayNumber, PROGRAM_DAYS } from '../lib/data'
+
 interface Props {
   startDate: Date
   completions: Record<string, Record<string, boolean>>
@@ -7,6 +8,7 @@ interface Props {
   onSelectDay: (day: number) => void
   onReturnToStandard: () => void
 }
+
 export default function JourneyTab({ startDate, completions, todayNum, onSelectDay, onReturnToStandard }: Props) {
   const streak = (() => {
     let s = 0
@@ -17,10 +19,12 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
     }
     return s
   })()
+
   const daysComplete = Array.from({ length: PROGRAM_DAYS }, (_, i) => i + 1).filter(d => {
     const dc = completions[d] || {}
     return COMMITMENTS.every(c => dc[c.id])
   }).length
+
   return (
     <div id="tab-journey">
       <div className="stats-row">
@@ -37,16 +41,18 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
           <div className="stat-label">Remaining</div>
         </div>
       </div>
+
       <div className="grid" id="grid">
         {Array.from({ length: PROGRAM_DAYS }, (_, i) => i + 1).map(d => {
           const dc = completions[d] || {}
           const allDone = COMMITMENTS.every(c => dc[c.id])
           const partial = !allDone && COMMITMENTS.some(c => dc[c.id])
           const future = d > todayNum
+          const isToday = d === todayNum
           return (
             <div
               key={d}
-              className={`grid-cell ${allDone ? 'done' : ''} ${partial ? 'partial' : ''} ${future ? 'future' : ''}`}
+              className={`grid-cell ${allDone ? 'done' : ''} ${partial ? 'partial' : ''} ${future ? 'future' : ''} ${isToday ? 'today' : ''}`}
               onClick={() => onSelectDay(d)}
             >
               {d}
@@ -54,11 +60,13 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
           )
         })}
       </div>
+
       <div className="legend">
         <div className="legend-item"><div className="legend-dot done" />Complete</div>
         <div className="legend-item"><div className="legend-dot partial" />Partial</div>
         <div className="legend-item"><div className="legend-dot" />Upcoming</div>
       </div>
+
       <button type="button" className="back-to-standard" onClick={onReturnToStandard}>
         ← The Standard
       </button>
