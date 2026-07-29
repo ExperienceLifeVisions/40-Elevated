@@ -14,7 +14,7 @@ export default function ShareModal({ onClose }: { onClose: () => void }) {
     script.onload = () => {
       const el = document.getElementById('qr-code')
       if (el && !(window as any).qrGenerated) {
-        new (window as any).QRCode(el, { text: APP_URL, width: 140, height: 140, colorDark: '#c41e1e', colorLight: '#ffffff' })
+        new (window as any).QRCode(el, { text: APP_URL, width: 140, height: 140, colorDark: '#000000', colorLight: '#ffffff' })
         ;(window as any).qrGenerated = true
       }
       setQrReady(true)
