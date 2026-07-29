@@ -40,7 +40,6 @@ export default function ShareModal({ onClose }: { onClose: () => void }) {
       <div className="share-modal" onClick={e => e.stopPropagation()}>
         <div className="share-handle" />
         <img src="/logo.png" alt="40 Elevated" className="share-modal-logo" />
-        <div className="share-modal-title">40 Elevated</div>
         <div className="share-modal-sub">Scan to begin your walk with Christ</div>
         <div id="qr-code" className="qr-wrap" />
         <div className="share-url-row">
