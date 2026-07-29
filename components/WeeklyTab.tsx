@@ -1,5 +1,5 @@
 'use client'
-import { WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, weekRange } from '../lib/data'
+import { WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, weekRange, PROGRAM_WEEKS } from '../lib/data'
 
 interface Props {
   curWeek: number
@@ -23,7 +23,7 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
           <div className="week-number">Week <span>{curWeek}</span></div>
           <div className="week-range">{weekRange(startDate, curWeek)}</div>
         </div>
-        <button className="nav-btn" onClick={() => onChangeWeek(Math.min(11, curWeek + 1))}>›</button>
+        <button className="nav-btn" onClick={() => onChangeWeek(Math.min(PROGRAM_WEEKS, curWeek + 1))}>›</button>
       </div>
 
       {fruit && (
@@ -98,9 +98,9 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
         })}
       </div>
 
-      <div className="section-label">All 11 weeks</div>
+      <div className="section-label">All {PROGRAM_WEEKS} weeks</div>
       <div className="weekly-weeks" id="weekly-weeks">
-        {Array.from({ length: 11 }, (_, i) => i + 1).map(w => (
+        {Array.from({ length: PROGRAM_WEEKS }, (_, i) => i + 1).map(w => (
           <div
             key={w}
             className={`week-cell ${w === curWeek ? 'active' : ''} ${w < curWeek ? 'done' : ''}`}
