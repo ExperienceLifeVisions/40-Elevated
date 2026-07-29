@@ -28,8 +28,7 @@ export default function AuthScreen() {
     <div className="auth-screen">
       <div className="auth-inner">
         <div className="auth-logo-wrap">
-          <img src="/logo.png" alt="40 Elevated" style={{ width: 200, height: 'auto', display: 'block', margin: '0 auto 12px' }} />
-          <div className="auth-logo-sub">A Walk With Jesus</div>
+          <img src="/logo.png" alt="40 Elevated" style={{ width: 200, height: 'auto', display: 'block', margin: '0 auto' }} />
         </div>
 
         {!sent ? (
@@ -67,7 +66,6 @@ export default function AuthScreen() {
         .auth-screen { min-height: 100vh; background: #0a0a0a; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         .auth-inner { width: 100%; max-width: 360px; text-align: center; }
         .auth-logo-wrap { margin-bottom: 48px; }
-        .auth-logo-sub { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: #888; }
         .auth-title { font-size: 28px; font-weight: 300; color: #ffffff; margin-bottom: 12px; }
         .auth-sub { font-size: 13px; color: #888; line-height: 1.65; margin-bottom: 32px; }
         .auth-form { display: flex; flex-direction: column; gap: 12px; }
