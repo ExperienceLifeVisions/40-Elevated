@@ -196,7 +196,7 @@ export default function App({ user }: AppProps) {
       )}
 
       <div className="header" style={{ position: 'relative' }}>
-        <img src="/logo.png" alt="75 Elevated" style={{ width: 160, height: 'auto', display: 'block', margin: '0 auto 2px' }} />
+        <img src="/logo.png" alt="40 Elevated" style={{ width: 160, height: 'auto', display: 'block', margin: '0 auto 2px' }} />
         <p style={{ fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--gray)', textAlign: 'center', margin: 0 }}>
           A Walk With Jesus
         </p>
