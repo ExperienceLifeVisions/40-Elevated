@@ -31,7 +31,7 @@ export default function ShareModal({ onClose }: { onClose: () => void }) {
 
   function nativeShare() {
     if (navigator.share) {
-      navigator.share({ title: '75 Elevated', text: 'A Walk With Jesus — 75 days of spiritual discipline', url: APP_URL })
+      navigator.share({ title: '40 Elevated', text: 'A Walk With Jesus — 40 days of spiritual discipline', url: APP_URL })
     }
   }
 
@@ -39,8 +39,8 @@ export default function ShareModal({ onClose }: { onClose: () => void }) {
     <div className="share-modal-bg open" onClick={onClose}>
       <div className="share-modal" onClick={e => e.stopPropagation()}>
         <div className="share-handle" />
-        <img src="/logo.png" alt="75 Elevated" className="share-modal-logo" />
-        <div className="share-modal-title">75 Elevated</div>
+        <img src="/logo.png" alt="40 Elevated" className="share-modal-logo" />
+        <div className="share-modal-title">40 Elevated</div>
         <div className="share-modal-sub">Scan to begin your walk with Christ</div>
         <div id="qr-code" className="qr-wrap" />
         <div className="share-url-row">
