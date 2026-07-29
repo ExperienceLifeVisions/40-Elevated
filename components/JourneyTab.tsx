@@ -1,5 +1,5 @@
 'use client'
-import { COMMITMENTS, dayNumber } from '../lib/data'
+import { COMMITMENTS, dayNumber, PROGRAM_DAYS } from '../lib/data'
 interface Props {
   startDate: Date
   completions: Record<string, Record<string, boolean>>
@@ -17,7 +17,7 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
     }
     return s
   })()
-  const daysComplete = Array.from({ length: 75 }, (_, i) => i + 1).filter(d => {
+  const daysComplete = Array.from({ length: PROGRAM_DAYS }, (_, i) => i + 1).filter(d => {
     const dc = completions[d] || {}
     return COMMITMENTS.every(c => dc[c.id])
   }).length
@@ -33,12 +33,12 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
           <div className="stat-label">Complete</div>
         </div>
         <div className="stat">
-          <div className="stat-num">{Math.max(0, 75 - todayNum)}</div>
+          <div className="stat-num">{Math.max(0, PROGRAM_DAYS - todayNum)}</div>
           <div className="stat-label">Remaining</div>
         </div>
       </div>
       <div className="grid" id="grid">
-        {Array.from({ length: 75 }, (_, i) => i + 1).map(d => {
+        {Array.from({ length: PROGRAM_DAYS }, (_, i) => i + 1).map(d => {
           const dc = completions[d] || {}
           const allDone = COMMITMENTS.every(c => dc[c.id])
           const partial = !allDone && COMMITMENTS.some(c => dc[c.id])
