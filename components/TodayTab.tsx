@@ -1,5 +1,5 @@
 'use client'
-import { COMMITMENTS, APPROACH_NAMES, formatDate } from '../lib/data'
+import { COMMITMENTS, APPROACH_NAMES, formatDate, PROGRAM_DAYS } from '../lib/data'
 
 interface Props {
   curDay: number
@@ -57,7 +57,7 @@ export default function TodayTab({
           <div className="week-number">Day <span>{curDay}</span></div>
           <div className="week-range">{formatDate(startDate, curDay)}</div>
         </div>
-        <button className="nav-btn" onClick={() => onChangeDay(Math.min(75, curDay + 1))}>›</button>
+        <button className="nav-btn" onClick={() => onChangeDay(Math.min(PROGRAM_DAYS, curDay + 1))}>›</button>
       </div>
 
       <div style={{ marginBottom: 16 }}>
