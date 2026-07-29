@@ -8,7 +8,7 @@ const APPROACHES = [
   { id: 'keto', name: 'Ketogenic', desc: 'Very low carbohydrate, high fat. Shifts the body to burn fat for fuel. A powerful tool for some, particularly around blood sugar and metabolic health.' },
   { id: 'plantbased', name: 'Plant-based', desc: 'Centers on vegetables, legumes, whole grains, fruits, nuts, and seeds. Requires intentional planning — protein, B12, iron, and omega-3s deserve attention.' },
   { id: 'whole30', name: 'Whole30', desc: 'A 30-day reset that removes sugar, alcohol, grains, legumes, dairy, and processed foods. A powerful way to identify what serves your body and what does not.' },
-  { id: 'mypath', name: 'My own path', desc: 'Not ready for a full approach? That is okay. Small, consistent acts of stewardship are still stewardship. Choose one thing you are honoring your body with during these 75 days.' },
+  { id: 'mypath', name: 'My own path', desc: 'Not ready for a full approach? That is okay. Small, consistent acts of stewardship are still stewardship. Choose one thing you are honoring your body with during these 40 days.' },
 ]
 
 interface Props {
@@ -30,7 +30,7 @@ export default function NourishScreen({ approach: initialApproach, declaration: 
       if (!declaration) setDeclaration('')
     } else {
       const name = APPROACH_NAMES[id]
-      const defaultDecl = `As an act of worship, I am choosing to nourish my body through ${name} during these 75 days — honoring the temple God entrusted to me so I can serve Him fully.`
+      const defaultDecl = `As an act of worship, I am choosing to nourish my body through ${name} during these 40 days — honoring the temple God entrusted to me so I can serve Him fully.`
       setDeclaration(prev => prev && prev !== getDefaultDecl(initialApproach) ? prev : defaultDecl)
     }
   }
@@ -38,7 +38,7 @@ export default function NourishScreen({ approach: initialApproach, declaration: 
   function getDefaultDecl(id: string) {
     if (!id || id === 'mypath') return ''
     const name = APPROACH_NAMES[id]
-    return `As an act of worship, I am choosing to nourish my body through ${name} during these 75 days — honoring the temple God entrusted to me so I can serve Him fully.`
+    return `As an act of worship, I am choosing to nourish my body through ${name} during these 40 days — honoring the temple God entrusted to me so I can serve Him fully.`
   }
 
   async function handleSave() {
@@ -60,7 +60,7 @@ export default function NourishScreen({ approach: initialApproach, declaration: 
         <div className="nutrition-body">Daniel chose differently than the king&apos;s table and was more alive for it. <span style={{ color: 'var(--gray)', fontStyle: 'italic' }}>Daniel 1:15</span></div>
         <hr className="nutrition-divider" />
         <div className="nutrition-section-title">Choose your approach</div>
-        <div className="nutrition-body" style={{ color: 'var(--gray)' }}>Tap the one you are committing to for these 75 days.</div>
+        <div className="nutrition-body" style={{ color: 'var(--gray)' }}>Tap the one you are committing to for these 40 days.</div>
         {APPROACHES.map(a => (
           <div key={a.id} className={`nutrition-approach ${selectedApproach === a.id ? 'selected' : ''}`} onClick={() => selectApproach(a.id)}>
             <div className="nutrition-approach-name">{a.name}</div>
@@ -73,7 +73,7 @@ export default function NourishScreen({ approach: initialApproach, declaration: 
           {!selectedApproach && <div className="nutrition-declaration-hint">Choose an approach above to receive your personal declaration.</div>}
           {selectedApproach && (
             <>
-              <div className="nutrition-declaration-text">As an act of worship, I am choosing to nourish my body with __________ during these 75 days — honoring the temple God entrusted to me so I can serve Him fully.</div>
+              <div className="nutrition-declaration-text">As an act of worship, I am choosing to nourish my body with __________ during these 40 days — honoring the temple God entrusted to me so I can serve Him fully.</div>
               <textarea
                 className="nutrition-declaration-input"
                 rows={4}
