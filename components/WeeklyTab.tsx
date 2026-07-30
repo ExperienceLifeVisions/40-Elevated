@@ -1,5 +1,5 @@
 'use client'
-import { WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, weekRange, PROGRAM_WEEKS } from '../lib/data'
+import { WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, weekRange, weekNumber, PROGRAM_WEEKS } from '../lib/data'
 
 interface Props {
   curWeek: number
@@ -14,6 +14,9 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
   const wd = weeklyData[curWeek] || {}
   const fruit = FRUIT_DATA[curWeek - 1]
   const verse = WEEKLY_VERSES[curWeek - 1]
+
+  const currentWeek = weekNumber(startDate)
+  const isFuture = curWeek > currentWeek
 
   return (
     <div id="tab-weekly">
@@ -70,12 +73,15 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
       )}
 
       <div className="section-label">Weekly practices</div>
+      {isFuture && (
+        <div className="week-locked-note">This week has not begun yet.</div>
+      )}
       <div className="weekly-cards" id="weekly-cards">
         {WEEKLY_COMMITMENTS.map(c => {
           const checked = !!wd[c.id]
           return (
-            <div key={c.id} className={`weekly-card ${checked ? 'done' : ''}`}>
-              <div className="weekly-card-header" onClick={() => onToggle(curWeek, c.id)}>
+            <div key={c.id} className={`weekly-card ${checked ? 'done' : ''} ${isFuture ? 'future-week' : ''}`}>
+              <div className="weekly-card-header" onClick={() => !isFuture && onToggle(curWeek, c.id)}>
                 <div className="check">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                     <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -100,15 +106,21 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
 
       <div className="section-label">All {PROGRAM_WEEKS} weeks</div>
       <div className="weekly-weeks" id="weekly-weeks">
-        {Array.from({ length: PROGRAM_WEEKS }, (_, i) => i + 1).map(w => (
-          <div
-            key={w}
-            className={`week-cell ${w === curWeek ? 'active' : ''} ${w < curWeek ? 'done' : ''}`}
-            onClick={() => onChangeWeek(w)}
-          >
-            W{w}
-          </div>
-        ))}
+        {Array.from({ length: PROGRAM_WEEKS }, (_, i) => i + 1).map(w => {
+          const data = weeklyData[w] || {}
+          const allDone = WEEKLY_COMMITMENTS.every(c => data[c.id])
+          const partial = !allDone && WEEKLY_COMMITMENTS.some(c => data[c.id])
+          const locked = w > currentWeek
+          return (
+            <div
+              key={w}
+              className={`week-cell ${w === curWeek ? 'w-now' : ''} ${allDone ? 'w-done' : ''} ${partial ? 'w-partial' : ''} ${locked ? 'w-locked' : ''}`}
+              onClick={() => onChangeWeek(w)}
+            >
+              W{w}
+            </div>
+          )
+        })}
       </div>
 
       <button type="button" className="back-to-standard" onClick={onReturnToStandard}>
