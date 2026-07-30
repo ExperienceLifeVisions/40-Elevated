@@ -4,7 +4,7 @@ import ServiceWorkerRegister from '../components/ServiceWorkerRegister'
 
 export const metadata: Metadata = {
   title: '40 Elevated',
-  description: 'A Walk With Jesus — 40 days of spiritual discipline',
+  description: 'A Walk With Christ. 40 days of spiritual discipline.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
