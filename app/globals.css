@@ -47,7 +47,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .standard-item { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
 .standard-num { width: 24px; height: 24px; border-radius: 50%; border: 0.5px solid var(--border-red); color: var(--red); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 .standard-item-title { font-size: 14px; font-weight: 600; color: var(--off-white); margin-bottom: 3px; }
-.standard-item-desc { font-size: 12px; color: var(--gray); line-height: 1.6; }
+.standard-item-desc { font-size: 13px; color: var(--gray); line-height: 1.6; }
 .standard-purpose { background: var(--black-2); border: 0.5px solid var(--border-red); border-radius: 14px; padding: 20px; margin-bottom: 32px; }
 .standard-purpose p { font-size: 13px; color: var(--gray); line-height: 1.9; margin-bottom: 10px; }
 .standard-purpose p:last-child { margin-bottom: 0; }
@@ -85,12 +85,16 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .progress-fill { height: 100%; background: var(--red); border-radius: 99px; transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1); }
 .progress-label { font-size: 11px; color: var(--gray); letter-spacing: 0.06em; text-align: center; }
 .progress-label strong { color: var(--off-white); }
+.prog-bar-wrap { height: 3px; background: var(--black-4); border-radius: 99px; overflow: hidden; margin-bottom: 9px; }
+.prog { height: 100%; background: var(--red); border-radius: 99px; transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+.prog-label { font-size: 13px; color: var(--gray); letter-spacing: 0.04em; text-align: center; }
+.prog-label strong { color: var(--off-white); font-weight: 700; }
 
 /* ── COMMITMENTS ── */
 .commitments { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .commitment {
   display: flex; align-items: center; gap: 14px;
-  padding: 14px 16px;
+  padding: 15px 16px;
   background: var(--black-2);
   border: 0.5px solid var(--border);
   border-radius: 12px;
@@ -110,9 +114,9 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .commitment.done .check { background: var(--red); border-color: var(--red); }
 .check svg { display: none; }
 .commitment.done .check svg { display: block; }
-.commit-title { font-size: 14px; font-weight: 600; color: var(--off-white); letter-spacing: 0.01em; }
+.commit-title { font-size: 16px; font-weight: 600; color: var(--off-white); letter-spacing: 0.01em; }
 .commitment.done .commit-title { color: var(--gray); }
-.commit-desc { font-size: 11px; color: var(--gray); margin-top: 2px; line-height: 1.4; }
+.commit-desc { font-size: 14px; color: var(--gray); margin-top: 3px; line-height: 1.5; }
 
 /* ── VERSE OF THE WEEK ── */
 .week-verse-banner {
@@ -126,9 +130,9 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 }
 .week-verse-banner.visible { display: block; }
 .week-verse-eyebrow { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 5px; }
-.week-verse-text { font-size: 13px; color: var(--off-white); font-style: italic; line-height: 1.6; }
+.week-verse-text { font-size: 15px; color: var(--off-white); font-style: italic; line-height: 1.6; }
 .verse-banner { background: var(--black-2); border: 0.5px solid var(--border-red); border-left: 2px solid var(--red); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; }
-.verse-banner-text { font-size: 13px; color: var(--off-white); font-style: italic; line-height: 1.6; }
+.verse-banner-text { font-size: 15px; color: var(--off-white); font-style: italic; line-height: 1.6; }
 
 /* ── RESET ── */
 .reset-btn { background: none; border: none; font-size: 11px; color: var(--gray); cursor: pointer; display: block; margin: 0 auto; letter-spacing: 0.04em; padding: 8px; text-decoration: underline; text-underline-offset: 3px; }
@@ -302,7 +306,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .fruit-card { background: var(--black-2); border: 0.5px solid rgba(196,30,30,0.3); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
 .fruit-eyebrow { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
 .fruit-name { font-size: 26px; font-weight: 300; color: var(--white); line-height: 1.2; margin-bottom: 6px; }
-.fruit-def { font-size: 12px; color: var(--gray); line-height: 1.65; margin-bottom: 12px; }
+.fruit-def { font-size: 13px; color: var(--gray); line-height: 1.65; margin-bottom: 12px; }
 .fruit-divider { border: none; border-top: 0.5px solid rgba(255,255,255,0.08); margin: 12px 0; }
 .fruit-verse { font-size: 11px; color: var(--off-white); line-height: 1.65; font-style: italic; margin-bottom: 4px; }
 .fruit-ref { font-size: 10px; color: var(--red); }
