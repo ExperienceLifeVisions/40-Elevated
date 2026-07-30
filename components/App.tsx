@@ -348,13 +348,13 @@ export default function App({ user }: AppProps) {
       )}
 
       <style>{`
-        .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .help-trigger:active { border-color: rgba(196,30,30,0.4); color: #e33; }
         .preview-banner { border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 12px; padding: 15px 16px; text-align: center; margin-bottom: 18px; }
-        .pb-eyebrow { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: #e33; margin-bottom: 7px; }
-        .pb-date { font-size: 16px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
-        .pb-note { font-size: 11px; color: #888; line-height: 1.6; }
-        .pb-btn { display: block; width: 100%; padding: 14px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 12px; }
+        .pb-eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #e33; margin-bottom: 7px; }
+        .pb-date { font-size: 17px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
+        .pb-note { font-size: 13px; color: #888; line-height: 1.6; }
+        .pb-btn { display: block; width: 100%; padding: 14px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 12px; }
         .pb-btn:active { background: #8b1515; }
       `}</style>
     </div>
