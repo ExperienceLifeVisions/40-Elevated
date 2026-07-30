@@ -7,13 +7,22 @@ interface Props {
   onShowNourish: () => void
   hasStarted: boolean
   savedName: string | null
+  beforeLaunch: boolean
+  launchLabel: string
 }
 
-export default function StandardScreen({ onBegin, onClose, onShowNourish, hasStarted, savedName }: Props) {
+export default function StandardScreen({ onBegin, onClose, onShowNourish, hasStarted, savedName, beforeLaunch, launchLabel }: Props) {
   const [name, setName] = useState(savedName || '')
   const needsName = !savedName
 
   function handlePrimary() {
+    // Before the launch date, tapping through saves the name but does NOT
+    // start the counter. The participant lands in preview mode instead.
+    if (beforeLaunch) {
+      if (needsName && name.trim()) onBegin(name.trim())
+      else onClose()
+      return
+    }
     if (hasStarted) {
       if (needsName && name.trim()) onBegin(name.trim())
       else onClose()
@@ -21,6 +30,10 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
       onBegin(name.trim())
     }
   }
+
+  const primaryLabel = beforeLaunch
+    ? 'Look Around'
+    : hasStarted ? 'Return to Your Walk' : 'Begin Your Journey'
 
   return (
     <div className="standard-screen" id="standard-screen">
@@ -155,10 +168,16 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
           </div>
         )}
 
+        {beforeLaunch && !hasStarted && (
+          <div className="standard-launch-note">
+            Your walk begins {launchLabel}. Look around until then.
+          </div>
+        )}
+
         <button className="standard-begin" onClick={handlePrimary}>
-          {hasStarted ? 'Return to Your Walk' : 'Begin Your Journey'}
+          {primaryLabel}
         </button>
-        <button className="standard-revisit" onClick={hasStarted ? onClose : handlePrimary}>
+        <button className="standard-revisit" onClick={hasStarted || beforeLaunch ? onClose : handlePrimary}>
           I have already read this
         </button>
       </div>
@@ -168,6 +187,7 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
         .standard-name-label { display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
         .standard-name-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 16px; color: #ffffff; outline: none; box-sizing: border-box; font-family: inherit; }
         .standard-name-input:focus { border-color: rgba(196,30,30,0.4); }
+        .standard-launch-note { margin: 24px 0 14px; padding: 14px 16px; border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 10px; text-align: center; font-size: 12px; color: #f5f0ed; line-height: 1.6; }
       `}</style>
     </div>
   )
