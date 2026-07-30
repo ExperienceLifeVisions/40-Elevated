@@ -2,14 +2,13 @@
 import { useState } from 'react'
 
 const APP_URL = 'https://40elevated.com'
-const CODE_URL = 'https://40elevated.com/code'
 
 export default function InstallScreen({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false)
   const [trouble, setTrouble] = useState(false)
 
-  function copy(text: string) {
-    navigator.clipboard.writeText(text).then(() => {
+  function copy() {
+    navigator.clipboard.writeText(APP_URL).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     })
@@ -31,8 +30,8 @@ export default function InstallScreen({ onClose }: { onClose: () => void }) {
             <div className="install-step-text">Copy this address</div>
           </div>
           <div className="copy-big">
-            <div className="copy-big-url">40elevated.com/code</div>
-            <button type="button" className={`install-copy-btn ${copied ? 'copied' : ''}`} onClick={() => copy(CODE_URL)}>
+            <div className="copy-big-url">40elevated.com</div>
+            <button type="button" className={`install-copy-btn ${copied ? 'copied' : ''}`} onClick={copy}>
               {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>
@@ -43,11 +42,11 @@ export default function InstallScreen({ onClose }: { onClose: () => void }) {
           </div>
           <div className="install-step">
             <div className="install-step-num">3</div>
-            <div className="install-step-text">Add it to your home screen from there</div>
+            <div className="install-step-text">Sign in there with your code, the same way you did before</div>
           </div>
           <div className="install-step">
             <div className="install-step-num">4</div>
-            <div className="install-step-text">Open the new icon and sign in with a code. Just once.</div>
+            <div className="install-step-text">Then follow the steps on the previous page. They will work now.</div>
           </div>
         </div>
 
