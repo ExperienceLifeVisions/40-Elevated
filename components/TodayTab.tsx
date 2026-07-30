@@ -52,7 +52,7 @@ export default function TodayTab({
       {currentVerse && (
         <div className="verse-banner visible">
           <div className="verse-banner-text">{currentVerse.verse}</div>
-          <div style={{ fontSize: 10, color: 'var(--red)', marginTop: 4, letterSpacing: '0.06em' }}>{currentVerse.ref}</div>
+          <div style={{ fontSize: 12, color: 'var(--red)', marginTop: 5, letterSpacing: '0.06em' }}>{currentVerse.ref}</div>
         </div>
       )}
 
@@ -71,7 +71,7 @@ export default function TodayTab({
         </div>
         <div className="prog-label" id="prog-label">
           {isFuture
-            ? <span style={{ color: 'var(--gray)', fontSize: 11, letterSpacing: '0.06em' }}>This day has not begun yet.</span>
+            ? <span style={{ color: 'var(--gray)', fontSize: 13, letterSpacing: '0.06em' }}>This day has not begun yet.</span>
             : <><strong>{done} of {COMMITMENTS.length}</strong> commitments today</>
           }
         </div>
