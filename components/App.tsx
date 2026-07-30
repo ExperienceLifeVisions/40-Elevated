@@ -1,10 +1,11 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '../lib/supabase'
 import {
   COMMITMENTS, WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, APPROACH_NAMES,
-  today, parseLocalDate, dayNumber, weekNumber, dayKey, formatDate, weekRange, localDateStr
+  today, parseLocalDate, dayNumber, weekNumber, dayKey, formatDate, weekRange, localDateStr,
+  LAUNCH_DATE, isBeforeLaunch, launchDateLabel
 } from '../lib/data'
 import StandardScreen from './StandardScreen'
 import TodayTab from './TodayTab'
@@ -46,6 +47,20 @@ export default function App({ user }: AppProps) {
   const [showHelp, setShowHelp] = useState(false)
   const [completedDay, setCompletedDay] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [dateCheck, setDateCheck] = useState(0)
+
+  // Re-check the date whenever the app comes back to the foreground. A phone
+  // left open overnight would otherwise still believe it is yesterday.
+  useEffect(() => {
+    function onVisible() {
+      if (document.visibilityState === 'visible') setDateCheck(c => c + 1)
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [])
+
+  const beforeLaunch = useMemo(() => isBeforeLaunch(), [dateCheck])
+  const launchLabel = useMemo(() => launchDateLabel(), [])
 
   const loadData = useCallback(async () => {
     const [profileRes, completionsRes, weeklyRes] = await Promise.all([
@@ -61,10 +76,9 @@ export default function App({ user }: AppProps) {
         setStartDate(sd)
         setCurDay(dayNumber(sd))
         setCurWeek(weekNumber(sd))
-        if (!profileRes.data.name) setShowStandard(true)
-      } else {
-        setShowStandard(true)
       }
+      // Show the declaration until we know what to call them.
+      if (!profileRes.data.name) setShowStandard(true)
     } else {
       setShowStandard(true)
     }
@@ -95,11 +109,13 @@ export default function App({ user }: AppProps) {
 
   useEffect(() => { loadData() }, [loadData])
 
-  // Saves the name, and sets the start date ONLY if there isn't one already.
-  // Revisiting The Standard must never reset an existing participant to Day 1.
+  // Saves the name. Sets the start date only when the launch date has arrived
+  // and there is not one already. Revisiting The Standard must never reset
+  // an existing participant to Day 1.
   async function beginJourney(name: string) {
     const alreadyStarted = !!profile.start_date
-    const sdStr = alreadyStarted ? profile.start_date : localDateStr(today())
+    let sdStr = profile.start_date
+    if (!alreadyStarted && !beforeLaunch) sdStr = localDateStr(today())
 
     await supabase.from('user_profiles').upsert({
       id: user.id,
@@ -204,6 +220,11 @@ export default function App({ user }: AppProps) {
     )
   }
 
+  // No start date means preview mode: everything visible, nothing tickable.
+  const locked = !startDate
+  // Something for the tabs to render dates against. Before launch that is the
+  // launch date, so the header reads Day 1 with the real first day beside it.
+  const displayDate = startDate ?? (beforeLaunch ? parseLocalDate(LAUNCH_DATE) : today())
   const todayNum = startDate ? dayNumber(startDate) : 1
 
   return (
@@ -215,6 +236,8 @@ export default function App({ user }: AppProps) {
           onShowNourish={() => setShowNourish(true)}
           hasStarted={!!startDate}
           savedName={profile.name}
+          beforeLaunch={beforeLaunch}
+          launchLabel={launchLabel}
         />
       )}
 
@@ -236,11 +259,31 @@ export default function App({ user }: AppProps) {
       </div>
 
       <div className="tab-content">
-        {activeTab === 'today' && startDate && (
+        {locked && (
+          <div className="preview-banner">
+            <div className="pb-eyebrow">Preview</div>
+            {beforeLaunch ? (
+              <>
+                <div className="pb-date">Your walk begins {launchLabel}</div>
+                <div className="pb-note">Look around as much as you like. The Start button appears on the {launchLabel.split(' ').slice(-1)}.</div>
+              </>
+            ) : (
+              <>
+                <div className="pb-date">You have not begun yet</div>
+                <div className="pb-note">Look around as much as you like. Nothing counts until you start.</div>
+                <button type="button" className="pb-btn" onClick={() => beginJourney(profile.name || '')}>
+                  Start My Walk With Christ
+                </button>
+              </>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'today' && (
           <TodayTab
             curDay={curDay}
             todayNum={todayNum}
-            startDate={startDate}
+            startDate={displayDate}
             completions={completions}
             nutritionApproach={profile.nutrition_approach}
             onToggle={toggleCommitment}
@@ -248,26 +291,29 @@ export default function App({ user }: AppProps) {
             onShowInstall={() => setShowInstall(true)}
             onReturnToStandard={() => setShowStandard(true)}
             weeklyVerses={WEEKLY_VERSES}
-            weekNum={weekNumber(startDate)}
+            weekNum={startDate ? weekNumber(startDate) : 1}
+            locked={locked}
           />
         )}
-        {activeTab === 'weekly' && startDate && (
+        {activeTab === 'weekly' && (
           <WeeklyTab
             curWeek={curWeek}
-            startDate={startDate}
+            startDate={displayDate}
             weeklyData={weeklyData}
             onToggle={toggleWeekly}
             onChangeWeek={setCurWeek}
             onReturnToStandard={() => setShowStandard(true)}
+            locked={locked}
           />
         )}
-        {activeTab === 'journey' && startDate && (
+        {activeTab === 'journey' && (
           <JourneyTab
-            startDate={startDate}
+            startDate={displayDate}
             completions={completions}
             todayNum={todayNum}
             onSelectDay={(day) => { setCurDay(day); setActiveTab('today') }}
             onReturnToStandard={() => setShowStandard(true)}
+            locked={locked}
           />
         )}
         {activeTab === 'promise' && (
@@ -304,6 +350,12 @@ export default function App({ user }: AppProps) {
       <style>{`
         .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         .help-trigger:active { border-color: rgba(196,30,30,0.4); color: #e33; }
+        .preview-banner { border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 12px; padding: 15px 16px; text-align: center; margin-bottom: 18px; }
+        .pb-eyebrow { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: #e33; margin-bottom: 7px; }
+        .pb-date { font-size: 16px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
+        .pb-note { font-size: 11px; color: #888; line-height: 1.6; }
+        .pb-btn { display: block; width: 100%; padding: 14px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 12px; }
+        .pb-btn:active { background: #8b1515; }
       `}</style>
     </div>
   )
