@@ -112,3 +112,24 @@ export function weekRange(startDate: Date, week: number): string {
   const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   return `${fmt(d1)} — ${fmt(d2)}`
 }
+
+// ── LAUNCH GATE ──
+// The date the church begins together. Stored as plain text, YYYY-MM-DD, so
+// there is no month arithmetic to get wrong (JavaScript months count from 0,
+// which makes new Date(2026, 8, 3) September rather than August).
+// Change this one line to move the launch. A past date opens the app to everyone.
+export const LAUNCH_DATE = '2026-08-03'
+
+// True while the launch date has not arrived yet. Text comparison on
+// YYYY-MM-DD sorts correctly, so this needs no Date objects at all.
+export function isBeforeLaunch(currentDate: Date = today()): boolean {
+  return localDateStr(currentDate) < LAUNCH_DATE
+}
+
+// "Monday, August 3" for display. Derived from LAUNCH_DATE so it can never
+// disagree with the gate above.
+export function launchDateLabel(): string {
+  return parseLocalDate(LAUNCH_DATE).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric'
+  })
+}
