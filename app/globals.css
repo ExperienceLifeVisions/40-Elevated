@@ -17,7 +17,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; background: var(--black); color: var(--white); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif; overflow-x: hidden; }
 
-/* ── HEADER ── */
+/* â”€â”€ HEADER â”€â”€ */
 .header {
   background: var(--black);
   border-bottom: 0.5px solid var(--border);
@@ -32,7 +32,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .share-btn { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--gray); cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; }
 .share-btn:active { opacity: 0.6; }
 
-/* ── THE STANDARD ── */
+/* â”€â”€ THE STANDARD â”€â”€ */
 .standard-screen {
   position: fixed; inset: 0; z-index: 200;
   background: var(--black);
@@ -62,15 +62,15 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .standard-weekly-item-title { font-size: 13px; font-weight: 600; color: var(--off-white); margin-bottom: 2px; }
 .standard-weekly-item-desc { font-size: 12px; color: var(--gray); line-height: 1.6; }
 
-/* ── TABS ── */
+/* â”€â”€ TABS â”€â”€ */
 .tabs { display: flex; background: var(--black); border-bottom: 0.5px solid var(--border); }
 .tab { flex: 1; padding: 12px 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: none; color: var(--gray); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
 .tab.active { color: var(--red-bright); border-bottom-color: var(--red-bright); }
 
-/* ── CONTENT ── */
+/* â”€â”€ CONTENT â”€â”€ */
 .content { padding: 20px 16px; max-width: 500px; margin: 0 auto; }
 
-/* ── DAY NAV ── */
+/* â”€â”€ DAY NAV â”€â”€ */
 .day-nav { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .day-center { flex: 1; text-align: center; }
 .day-number { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; color: var(--white); line-height: 1; }
@@ -79,14 +79,14 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .nav-btn { width: 40px; height: 40px; border-radius: 50%; border: 0.5px solid var(--border); background: var(--black-3); color: var(--white); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .nav-btn:active { background: var(--black-4); transform: scale(0.95); }
 
-/* ── PROGRESS ── */
+/* â”€â”€ PROGRESS â”€â”€ */
 .progress-section { margin-bottom: 20px; }
 .progress-track { height: 3px; background: var(--black-4); border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
 .progress-fill { height: 100%; background: var(--red); border-radius: 99px; transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1); }
 .progress-label { font-size: 11px; color: var(--gray); letter-spacing: 0.06em; text-align: center; }
 .progress-label strong { color: var(--off-white); }
 
-/* ── COMMITMENTS ── */
+/* â”€â”€ COMMITMENTS â”€â”€ */
 .commitments { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .commitment {
   display: flex; align-items: center; gap: 14px;
@@ -114,7 +114,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .commitment.done .commit-title { color: var(--gray); }
 .commit-desc { font-size: 11px; color: var(--gray); margin-top: 2px; line-height: 1.4; }
 
-/* ── VERSE OF THE WEEK ── */
+/* â”€â”€ VERSE OF THE WEEK â”€â”€ */
 .week-verse-banner {
   background: var(--black-2);
   border: 0.5px solid var(--border-red);
@@ -130,16 +130,16 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .verse-banner { background: var(--black-2); border: 0.5px solid var(--border-red); border-left: 2px solid var(--red); border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; }
 .verse-banner-text { font-size: 13px; color: var(--off-white); font-style: italic; line-height: 1.6; }
 
-/* ── RESET ── */
+/* â”€â”€ RESET â”€â”€ */
 .reset-btn { background: none; border: none; font-size: 11px; color: var(--gray); cursor: pointer; display: block; margin: 0 auto; letter-spacing: 0.04em; padding: 8px; text-decoration: underline; text-underline-offset: 3px; }
 
-/* ── GRID VIEW ── */
+/* â”€â”€ GRID VIEW â”€â”€ */
 .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
 .stat { background: var(--black-2); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px 10px; text-align: center; }
 .stat-num { font-size: 28px; font-weight: 800; color: var(--white); letter-spacing: -0.02em; }
 .stat-num.red { color: var(--red-bright); }
 .stat-label { font-size: 10px; color: var(--gray); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 3px; }
-.grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+.grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .grid-cell {
   aspect-ratio: 1; border-radius: 6px;
   border: 0.5px solid var(--border);
@@ -159,7 +159,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .legend-dot.done { background: var(--red); border-color: var(--red); }
 .legend-dot.partial { background: rgba(196,30,30,0.18); border-color: var(--red-dim); }
 
-/* ── PROMISE ── */
+/* â”€â”€ PROMISE â”€â”€ */
 .promise-card {
   background: var(--black-2);
   border: 0.5px solid var(--border-red);
@@ -177,7 +177,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .promise-text { font-size: 15px; line-height: 2; color: var(--off-white); font-style: italic; }
 .promise-text .amen { color: var(--red); font-style: normal; font-weight: 700; font-size: 16px; display: block; margin-top: 12px; }
 
-/* ── WEEKLY ── */
+/* â”€â”€ WEEKLY â”€â”€ */
 .week-header { text-align: center; margin-bottom: 20px; }
 .week-number { font-size: 32px; font-weight: 800; color: var(--white); letter-spacing: -0.02em; line-height: 1; }
 .week-number span { color: var(--red); }
@@ -205,7 +205,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .week-cell.w-partial { background: rgba(196,30,30,0.1); border-color: var(--red-dim); color: var(--red); }
 .week-cell.w-done { background: var(--red); border-color: var(--red); color: var(--white); }
 
-/* ── SHARE ── */
+/* â”€â”€ SHARE â”€â”€ */
 .share-icon-btn { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--gray); cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; }
 .share-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 400; align-items: flex-end; justify-content: center; }
 .share-modal-bg.open { display: flex; }
@@ -227,7 +227,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .share-social-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: var(--black-3); border: 0.5px solid var(--border); border-radius: 8px; color: var(--off-white); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; text-decoration: none; }
 .share-social-btn:active { opacity: 0.7; }
 
-/* ── INSTALL ROW ── */
+/* â”€â”€ INSTALL ROW â”€â”€ */
 .install-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); margin-bottom: 20px; }
 .install-row-icon { width: 44px; height: 44px; border-radius: 10px; background: #1a1a1a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 22px; }
 .install-row-text { flex: 1; }
@@ -236,7 +236,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .install-row-btn { background: none; color: var(--red); border: 0.5px solid var(--red); border-radius: 6px; padding: 8px 14px; font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 0.08em; white-space: nowrap; flex-shrink: 0; text-transform: uppercase; }
 .install-row-btn:active { opacity: 0.7; }
 
-/* ── INSTALL FULL SCREEN ── */
+/* â”€â”€ INSTALL FULL SCREEN â”€â”€ */
 .install-screen { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--black); z-index: 9999; overflow-y: auto; padding: 0; -webkit-overflow-scrolling: touch; }
 .install-screen.open { display: block; }
 .install-screen-inner { padding: 16px 24px 48px; max-width: 500px; margin: 0 auto; }
@@ -258,7 +258,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .install-step-text { font-size: 14px; color: var(--off-white); line-height: 1.55; padding-top: 3px; }
 .install-step-text strong { color: var(--white); }
 
-/* ── NUTRITION GUIDE ── */
+/* â”€â”€ NUTRITION GUIDE â”€â”€ */
 .nutrition-guide-btn { display: inline-block; margin-top: 10px; background: none; border: 0.5px solid var(--red); border-radius: 6px; color: var(--red); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 12px; cursor: pointer; }
 .nutrition-guide-btn:active { opacity: 0.7; }
 .nutrition-screen { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--black); z-index: 9999; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -288,7 +288,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .nutrition-save-btn:active { background: var(--red-dim); }
 .nutrition-saved-msg { font-size: 11px; color: var(--gray); text-align: center; margin-top: 8px; display: none; }
 
-/* ── FRUIT OF THE SPIRIT ── */
+/* â”€â”€ FRUIT OF THE SPIRIT â”€â”€ */
 .fruit-card { background: var(--black-2); border: 0.5px solid rgba(196,30,30,0.3); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
 .fruit-eyebrow { font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
 .fruit-name { font-size: 26px; font-weight: 300; color: var(--white); line-height: 1.2; margin-bottom: 6px; }
@@ -309,7 +309,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .fruit-harvest-item { background: var(--black-3); border-radius: 8px; padding: 8px 6px; text-align: center; font-size: 10px; color: var(--off-white); font-weight: 600; letter-spacing: 0.02em; }
 .fruit-reflection { background: var(--black-3); border-radius: 8px; padding: 12px 14px; margin-top: 10px; font-size: 12px; color: var(--gray); line-height: 1.7; font-style: italic; }
 
-/* ── BACK TO STANDARD ── */
+/* â”€â”€ BACK TO STANDARD â”€â”€ */
 .back-to-standard { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 24px; padding: 11px; background: rgba(196,30,30,0.1); border: 0.5px solid rgba(196,30,30,0.3); border-radius: 8px; color: var(--red); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
 .back-to-standard:active { opacity: 0.6; }
 
@@ -317,7 +317,7 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .verse-display-ref { font-size: 10px; color: var(--red); letter-spacing: 0.06em; padding: 0 14px; }
 .verse-label { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gray); margin-bottom: 8px; }
 
-/* ── DAY COMPLETION ── */
+/* â”€â”€ DAY COMPLETION â”€â”€ */
 .day-complete-screen { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0a0a0a; z-index: 9999; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .day-complete-screen.open { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .day-complete-inner { padding: 48px 32px; max-width: 400px; width: 100%; text-align: center; }
