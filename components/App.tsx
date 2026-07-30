@@ -20,6 +20,7 @@ import HelpScreen from './HelpScreen'
 type Tab = 'today' | 'weekly' | 'journey' | 'promise'
 
 interface Profile {
+  name: string | null
   start_date: string | null
   nutrition_approach: string | null
   nutrition_declaration: string | null
@@ -30,7 +31,7 @@ interface AppProps { user: User }
 export default function App({ user }: AppProps) {
   const supabase = createClient()
 
-  const [profile, setProfile] = useState<Profile>({ start_date: null, nutrition_approach: null, nutrition_declaration: null })
+  const [profile, setProfile] = useState<Profile>({ name: null, start_date: null, nutrition_approach: null, nutrition_declaration: null })
   const [completions, setCompletions] = useState<Record<string, Record<string, boolean>>>({})
   const [weeklyData, setWeeklyData] = useState<Record<number, Record<string, boolean>>>({})
   const [startDate, setStartDate] = useState<Date | null>(null)
@@ -58,10 +59,9 @@ export default function App({ user }: AppProps) {
       if (profileRes.data.start_date) {
         const sd = parseLocalDate(profileRes.data.start_date)
         setStartDate(sd)
-        const dn = dayNumber(sd)
-        const wn = weekNumber(sd)
-        setCurDay(dn)
-        setCurWeek(wn)
+        setCurDay(dayNumber(sd))
+        setCurWeek(weekNumber(sd))
+        if (!profileRes.data.name) setShowStandard(true)
       } else {
         setShowStandard(true)
       }
@@ -95,19 +95,33 @@ export default function App({ user }: AppProps) {
 
   useEffect(() => { loadData() }, [loadData])
 
-  async function beginJourney() {
-    const sd = today()
-    const sdStr = localDateStr(sd)
+  // Saves the name, and sets the start date ONLY if there isn't one already.
+  // Revisiting The Standard must never reset an existing participant to Day 1.
+  async function beginJourney(name: string) {
+    const alreadyStarted = !!profile.start_date
+    const sdStr = alreadyStarted ? profile.start_date : localDateStr(today())
+
     await supabase.from('user_profiles').upsert({
       id: user.id,
+      name: name || profile.name,
       start_date: sdStr,
       nutrition_approach: profile.nutrition_approach,
       nutrition_declaration: profile.nutrition_declaration,
     })
-    setStartDate(sd)
-    setProfile(p => ({ ...p, start_date: sdStr }))
-    setCurDay(1)
-    setCurWeek(1)
+
+    setProfile(p => ({ ...p, name: name || p.name, start_date: sdStr }))
+
+    if (!alreadyStarted && sdStr) {
+      const sd = parseLocalDate(sdStr)
+      setStartDate(sd)
+      setCurDay(1)
+      setCurWeek(1)
+    }
+    setShowStandard(false)
+  }
+
+  // Returning participants just close the screen. No database write at all.
+  function closeStandard() {
     setShowStandard(false)
   }
 
@@ -170,6 +184,7 @@ export default function App({ user }: AppProps) {
   async function saveNutrition(approach: string, declaration: string) {
     await supabase.from('user_profiles').upsert({
       id: user.id,
+      name: profile.name,
       start_date: profile.start_date,
       nutrition_approach: approach,
       nutrition_declaration: declaration,
@@ -192,8 +207,10 @@ export default function App({ user }: AppProps) {
       {showStandard && (
         <StandardScreen
           onBegin={beginJourney}
+          onClose={closeStandard}
           onShowNourish={() => setShowNourish(true)}
           hasStarted={!!startDate}
+          savedName={profile.name}
         />
       )}
 
