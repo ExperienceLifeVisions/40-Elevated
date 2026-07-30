@@ -15,16 +15,19 @@ interface Props {
   onReturnToStandard: () => void
   weeklyVerses: Verse[]
   weekNum: number
+  locked: boolean
 }
 
 export default function TodayTab({
   curDay, todayNum, startDate, completions, nutritionApproach,
-  onToggle, onChangeDay, onShowInstall, onReturnToStandard, weeklyVerses, weekNum
+  onToggle, onChangeDay, onShowInstall, onReturnToStandard, weeklyVerses, weekNum, locked
 }: Props) {
   const dayCompletions = completions[curDay] || {}
   const done = COMMITMENTS.filter(c => dayCompletions[c.id]).length
   const pct = Math.round((done / COMMITMENTS.length) * 100)
-  const isFuture = curDay > todayNum
+  // locked wins over the day comparison. A start date in the future still
+  // calculates as Day 1, so the comparison alone is not enough.
+  const isFuture = locked || curDay > todayNum
   const currentVerse = weeklyVerses[weekNum - 1]
 
   function getNourishDesc() {
