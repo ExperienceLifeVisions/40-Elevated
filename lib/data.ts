@@ -58,7 +58,7 @@ I will strengthen my mind through His Word.
 I will discipline my flesh through fasting.
 I will pray without ceasing.
 I will move with gratitude.
-I will walk in the Spirit, bearing His fruit: love, joy, peace, patience, gentleness, goodness, faithfulness, kindness, and self control.
+I will walk in the Spirit, bearing His fruit: love, joy, peace, patience, kindness, goodness, faithfulness, gentleness, and self control.
 I will serve others with humility and love.
 I will lead others to Christ through how I live.
 I will choose obedience over convenience.
