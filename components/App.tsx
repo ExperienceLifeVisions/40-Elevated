@@ -163,6 +163,10 @@ export default function App({ user }: AppProps) {
   }
 
   async function toggleWeekly(weekNum: number, commitmentId: string) {
+    // A week cannot be completed before its days have arrived.
+    if (!startDate) return
+    if (weekNum > weekNumber(startDate)) return
+
     const currentlyDone = weeklyData[weekNum]?.[commitmentId] ?? false
     const newValue = !currentlyDone
 
