@@ -31,13 +31,29 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
     }
   }
 
+  // "Monday, August 3" -> "August 3", so the button stays short
+  const shortDate = launchLabel.split(', ').pop() || launchLabel
   const primaryLabel = beforeLaunch
-    ? 'Look Around'
+    ? `Look Around Until ${shortDate}`
     : hasStarted ? 'Return to Your Walk' : 'Begin Your Journey'
+  // The declaration is a threshold the first time only. Once someone has
+  // given a name they have crossed it, so they get a quick way out.
+  const showBack = !needsName
 
   return (
     <div className="standard-screen" id="standard-screen">
-      <div className="standard-inner">
+      {showBack && (
+        <button type="button" className="standard-screen-back" onClick={onClose}>← Back</button>
+      )}
+      <div className="standard-inner" style={showBack ? { paddingTop: 'calc(env(safe-area-inset-top, 0px) + 86px)' } : undefined}>
+        {beforeLaunch && !hasStarted && (
+          <div className="standard-welcome">
+            <div className="sw-eyebrow">Welcome</div>
+            <div className="sw-date">We begin {launchLabel}</div>
+            <div className="sw-note">Read The Standard, then look around the app until then.</div>
+          </div>
+        )}
+
         <img src="/logo.png" alt="40 Elevated" className="standard-logo" />
 
         <div className="standard-verse">
@@ -168,17 +184,8 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
           </div>
         )}
 
-        {beforeLaunch && !hasStarted && (
-          <div className="standard-launch-note">
-            Your walk begins {launchLabel}. Look around until then.
-          </div>
-        )}
-
         <button className="standard-begin" onClick={handlePrimary}>
           {primaryLabel}
-        </button>
-        <button className="standard-revisit" onClick={hasStarted || beforeLaunch ? onClose : handlePrimary}>
-          I have already read this
         </button>
       </div>
 
@@ -187,7 +194,13 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
         .standard-name-label { display: block; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
         .standard-name-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 17px; color: #ffffff; outline: none; box-sizing: border-box; font-family: inherit; }
         .standard-name-input:focus { border-color: rgba(196,30,30,0.4); }
-        .standard-launch-note { margin: 24px 0 14px; padding: 14px 16px; border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 10px; text-align: center; font-size: 14px; color: #f5f0ed; line-height: 1.6; }
+        .standard-begin { font-size: 16px; }
+        .standard-screen-back { position: absolute; top: 0; left: 0; right: 0; z-index: 401; display: flex; align-items: center; gap: 8px; min-height: 46px; background: #0a0a0a; border: none; border-bottom: 0.5px solid rgba(255,255,255,0.08); color: #f5f0ed; font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; cursor: pointer; padding: 12px 18px; padding-top: calc(env(safe-area-inset-top, 0px) + 12px); }
+        .standard-screen-back:active { opacity: 0.6; }
+        .standard-welcome { border: 0.5px solid rgba(196,30,30,0.4); background: rgba(196,30,30,0.07); border-radius: 12px; margin: 0 0 26px; padding: 16px; text-align: center; }
+        .sw-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e33; margin-bottom: 8px; }
+        .sw-date { font-size: 19px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
+        .sw-note { font-size: 13px; color: #999; line-height: 1.55; }
       `}</style>
     </div>
   )
