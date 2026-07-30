@@ -331,3 +331,6 @@ html, body { height: 100%; background: var(--black); color: var(--white); font-f
 .day-complete-btn:active { opacity: 0.6; }
 
 .commitment.future-day { opacity: 0.35; cursor: default; pointer-events: none; }
+.weekly-card.future-week { opacity: 0.35; cursor: default; pointer-events: none; }
+.week-cell.w-locked { opacity: 0.35; }
+.week-locked-note { text-align: center; font-size: 11px; color: var(--gray); letter-spacing: 0.06em; margin-bottom: 12px; }
