@@ -2,15 +2,64 @@
 import { useState } from 'react'
 
 const APP_URL = 'https://40elevated.com'
+const CODE_URL = 'https://40elevated.com/code'
 
 export default function InstallScreen({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false)
+  const [trouble, setTrouble] = useState(false)
 
-  function copyLink() {
-    navigator.clipboard.writeText(APP_URL).then(() => {
+  function copy(text: string) {
+    navigator.clipboard.writeText(text).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     })
+  }
+
+  if (trouble) {
+    return (
+      <div className="install-screen open">
+        <button type="button" className="install-screen-back" onClick={() => setTrouble(false)}>← Back</button>
+        <div className="install-screen-inner">
+          <div className="install-screen-title">Let us fix this.</div>
+
+          <div className="tr-warn">
+            <p>Some browsers, including <strong>Chrome on iPhone</strong>, cannot add apps to the home screen. Apple only allows it in <strong>Safari</strong>.</p>
+          </div>
+
+          <div className="install-step">
+            <div className="install-step-num">1</div>
+            <div className="install-step-text">Copy this address</div>
+          </div>
+          <div className="copy-big">
+            <div className="copy-big-url">40elevated.com/code</div>
+            <button type="button" className={`install-copy-btn ${copied ? 'copied' : ''}`} onClick={() => copy(CODE_URL)}>
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+
+          <div className="install-step">
+            <div className="install-step-num">2</div>
+            <div className="install-step-text">Open <strong>Safari</strong> yourself and paste it in. Do not tap a link in your email.</div>
+          </div>
+          <div className="install-step">
+            <div className="install-step-num">3</div>
+            <div className="install-step-text">Add it to your home screen from there</div>
+          </div>
+          <div className="install-step">
+            <div className="install-step-num">4</div>
+            <div className="install-step-text">Open the new icon and sign in with a code. Just once.</div>
+          </div>
+        </div>
+
+        <style>{`
+          .tr-warn { border: 1px solid rgba(196,30,30,0.5); background: rgba(196,30,30,0.09); border-radius: 12px; padding: 16px; margin: 20px 0 24px; }
+          .tr-warn p { font-size: 15px; color: #ddd; line-height: 1.6; margin: 0; }
+          .tr-warn strong { color: #fff; font-weight: 700; }
+          .copy-big { display: flex; align-items: center; gap: 10px; background: #141414; border: 0.5px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px 16px; margin: 14px 0 22px; }
+          .copy-big-url { flex: 1; font-size: 15px; color: #f5f0ed; font-family: ui-monospace, Menlo, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        `}</style>
+      </div>
+    )
   }
 
   return (
@@ -57,15 +106,7 @@ export default function InstallScreen({ onClose }: { onClose: () => void }) {
           <div className="install-step-text">Tap <strong>Add</strong> to finish</div>
         </div>
 
-        <div className="install-last-resort">
-          Cannot find either one? You are probably viewing this inside an email or social app. Tap its <strong>&#8943;</strong> menu, choose <strong>Open in Safari</strong>, and try again from there.
-          <div className="install-copy-row" style={{ marginTop: 16 }}>
-            <div className="install-copy-url">40elevated.com</div>
-            <button type="button" className={`install-copy-btn ${copied ? 'copied' : ''}`} onClick={copyLink}>
-              {copied ? 'Copied!' : 'Copy Link'}
-            </button>
-          </div>
-        </div>
+        <button type="button" className="trouble-btn" onClick={() => setTrouble(true)}>Having trouble?</button>
       </div>
 
       <style>{`
@@ -74,8 +115,8 @@ export default function InstallScreen({ onClose }: { onClose: () => void }) {
         .find-ic { color: #e33; margin-bottom: 10px; display: flex; justify-content: center; }
         .find-lb { font-size: 14px; color: #f5f0ed; font-weight: 600; line-height: 1.35; }
         .find-hint { text-align: center; font-size: 13px; color: #888; margin-top: 12px; }
-        .install-last-resort { border-top: 0.5px solid rgba(255,255,255,0.08); margin-top: 26px; padding-top: 18px; font-size: 13px; color: #888; line-height: 1.6; }
-        .install-last-resort strong { color: #f5f0ed; }
+        .trouble-btn { display: block; width: 100%; padding: 17px; background: #ffffff; color: #c41e1e; border: none; border-radius: 10px; font-size: 16px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; margin-top: 30px; }
+        .trouble-btn:active { opacity: 0.85; }
       `}</style>
     </div>
   )
