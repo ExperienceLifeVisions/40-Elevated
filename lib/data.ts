@@ -50,20 +50,35 @@ export const APPROACH_NAMES: Record<string, string> = {
   mypath: 'my own path',
 }
 
-export const PROMISE_TEXT = `I choose to pursue Jesus with the same dedication I once gave to building my body.
+export const PROMISE_TEXT = `I choose today to make Christ my standard.
 
-I will seek Him before the world.
-I will honor Him with my health.
+I will seek Christ before the world.
+I will honor Him with my body, my mind, and my spirit.
 I will strengthen my mind through His Word.
 I will discipline my flesh through fasting.
-I will move with gratitude.
 I will pray without ceasing.
+I will move with gratitude.
+I will walk in the Spirit, bearing His fruit: love, joy, peace, patience, gentleness, goodness, faithfulness, kindness, and self control.
+I will serve others with humility and love.
+I will lead others to Christ through how I live.
+I will choose obedience over convenience.
+Faith over fear.
+Truth over comfort.
 
-For the next 40 days, I choose surrender over comfort, obedience over convenience, and faith over fear.
+For these next 40 days, I am building disciplines that will outlast this journey.
 
-May every habit bring me closer to Christ, and may my life reflect His love, His truth, and His purpose.
+I am establishing a new standard for how I live.
+A standard that seeks Christ daily.
+A standard that walks in the Spirit.
+A standard that serves others with love.
+A standard that leads others to Christ.
 
-Not my will, but Yours be done.`
+May every step draw me closer to Christ.
+May my life reflect His love, His truth, and His purpose.
+
+This is not simply a challenge.
+
+THIS IS THE STANDARD`
 
 // Date utilities (local time, no UTC offset issues)
 export function localDateStr(d: Date): string {
