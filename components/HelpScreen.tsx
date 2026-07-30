@@ -25,12 +25,12 @@ export default function HelpScreen({ onClose }: { onClose: () => void }) {
         .help-screen { position: fixed; inset: 0; background: #0a0a0a; z-index: 60; overflow-y: auto; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         .help-inner { width: 100%; max-width: 320px; text-align: center; }
         .help-icon { width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 24px; border: 0.5px solid rgba(196,30,30,0.4); display: flex; align-items: center; justify-content: center; color: #e33; }
-        .help-title { font-size: 24px; font-weight: 300; color: #ffffff; margin-bottom: 12px; }
-        .help-sub { font-size: 13px; color: #888; line-height: 1.65; margin-bottom: 28px; }
-        .help-email-btn { display: block; padding: 15px; background: #c41e1e; color: #ffffff; text-decoration: none; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
+        .help-title { font-size: 26px; font-weight: 300; color: #ffffff; margin-bottom: 12px; }
+        .help-sub { font-size: 15px; color: #888; line-height: 1.65; margin-bottom: 28px; }
+        .help-email-btn { display: block; padding: 15px; background: #c41e1e; color: #ffffff; text-decoration: none; border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
         .help-email-btn:active { background: #8b1515; }
-        .help-addr { font-size: 12px; color: #888; word-break: break-all; margin-bottom: 30px; }
-        .help-back { background: none; border: none; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .help-addr { font-size: 14px; color: #888; word-break: break-all; margin-bottom: 30px; }
+        .help-back { background: none; border: none; color: #888; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
       `}</style>
     </div>
   )
