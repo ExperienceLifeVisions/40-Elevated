@@ -46,7 +46,7 @@ export default function SignInPage() {
 
         {state !== 'error' ? (
           <>
-            <div className="si-title">Welcome back.</div>
+            <div className="si-title">Almost there.</div>
             <div className="si-sub">Tap below to finish signing in.</div>
             <button
               type="button"
@@ -54,7 +54,7 @@ export default function SignInPage() {
               onClick={handleSignIn}
               disabled={state === 'working' || !tokenHash}
             >
-              {state === 'working' ? 'Signing you in...' : 'Continue to 40 Elevated'}
+              {state === 'working' ? 'Opening...' : 'Open 40 Elevated'}
             </button>
           </>
         ) : (
