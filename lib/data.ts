@@ -13,7 +13,7 @@ export const COMMITMENTS = [
 ]
 
 export const WEEKLY_COMMITMENTS = [
-  { id: 'sabbath', title: 'Sabbath hour', desc: 'One hour set apart. Rest is obedience.' },
+  { id: 'sabbath', title: 'Sabbath hour', desc: 'A weekly invitation to step away from work, quiet the noise, and turn your attention to Christ.' },
   { id: 'scripture_memory', title: 'Scripture memory', desc: 'This week\'s verse is assigned below. Commit it to memory.', hasVerse: true },
   { id: 'act_of_service', title: 'Act of service', desc: 'Faith without works is dead. Go prove yours alive.' },
 ]
