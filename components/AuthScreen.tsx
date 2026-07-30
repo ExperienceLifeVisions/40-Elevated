@@ -23,7 +23,7 @@ export default function AuthScreen() {
   async function submitCode(e: React.FormEvent) {
     e.preventDefault()
     const token = code.replace(/\D/g, '')
-    if (token.length < 6) { setError('Enter all 6 digits.'); return }
+    if (token.length < 6) { setError('Enter the whole code from your email.'); return }
     setLoading(true)
     setError('')
     const { error } = await supabase.auth.verifyOtp({ email: email.trim(), token, type: 'email' })
@@ -45,7 +45,7 @@ export default function AuthScreen() {
         {!sent ? (
           <>
             <div className="auth-title">Begin your walk.</div>
-            <div className="auth-sub">Enter your email and we will send you a 6 digit code. No password needed.</div>
+            <div className="auth-sub">Enter your email and we will send you a code. No password needed.</div>
             <form onSubmit={sendCode} className="auth-form">
               <input
                 type="email"
@@ -66,17 +66,17 @@ export default function AuthScreen() {
         ) : (
           <>
             <div className="auth-title">Enter your code.</div>
-            <div className="auth-sub">We sent 6 digits to <strong>{email}</strong>. Read them and type them below.</div>
+            <div className="auth-sub">We sent a code to <strong>{email}</strong>. Read it and type it below.</div>
             <form onSubmit={submitCode} className="auth-form">
               <input
                 type="text"
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 className="auth-code"
-                placeholder="000000"
+                placeholder="Your code"
                 value={code}
-                onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                maxLength={6}
+                onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                maxLength={10}
               />
               {error && <div className="auth-error">{error}</div>}
               <button type="submit" className="auth-btn" disabled={loading}>
@@ -106,9 +106,9 @@ export default function AuthScreen() {
         .auth-form { display: flex; flex-direction: column; gap: 12px; }
         .auth-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 17px; color: #ffffff; outline: none; box-sizing: border-box; }
         .auth-input:focus { border-color: rgba(196,30,30,0.4); }
-        .auth-code { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px; font-size: 28px; letter-spacing: 0.3em; text-align: center; color: #ffffff; outline: none; box-sizing: border-box; font-family: ui-monospace, Menlo, monospace; }
+        .auth-code { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px; font-size: 26px; letter-spacing: 0.24em; text-align: center; color: #ffffff; outline: none; box-sizing: border-box; font-family: ui-monospace, Menlo, monospace; }
         .auth-code:focus { border-color: rgba(196,30,30,0.4); }
-        .auth-code::placeholder { color: #3a3a3a; }
+        .auth-code::placeholder { color: #3a3a3a; font-size: 17px; letter-spacing: 0.06em; font-family: -apple-system, sans-serif; }
         .auth-error { font-size: 14px; color: #e33; text-align: left; padding: 0 4px; line-height: 1.5; }
         .auth-btn { width: 100%; padding: 15px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
         .auth-btn:disabled { opacity: 0.6; }
