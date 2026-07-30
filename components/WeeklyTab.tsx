@@ -8,15 +8,18 @@ interface Props {
   onToggle: (week: number, id: string) => void
   onChangeWeek: (week: number) => void
   onReturnToStandard: () => void
+  locked: boolean
 }
 
-export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, onChangeWeek, onReturnToStandard }: Props) {
+export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, onChangeWeek, onReturnToStandard, locked }: Props) {
   const wd = weeklyData[curWeek] || {}
   const fruit = FRUIT_DATA[curWeek - 1]
   const verse = WEEKLY_VERSES[curWeek - 1]
 
-  const currentWeek = weekNumber(startDate)
-  const isFuture = curWeek > currentWeek
+  // locked wins. In preview there is no start date yet, so the week
+  // comparison below cannot be trusted on its own.
+  const currentWeek = locked ? 0 : weekNumber(startDate)
+  const isFuture = locked || curWeek > currentWeek
 
   return (
     <div id="tab-weekly">
@@ -110,11 +113,11 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
           const data = weeklyData[w] || {}
           const allDone = WEEKLY_COMMITMENTS.every(c => data[c.id])
           const partial = !allDone && WEEKLY_COMMITMENTS.some(c => data[c.id])
-          const locked = w > currentWeek
+          const wLocked = w > currentWeek
           return (
             <div
               key={w}
-              className={`week-cell ${w === curWeek ? 'w-now' : ''} ${allDone ? 'w-done' : ''} ${partial ? 'w-partial' : ''} ${locked ? 'w-locked' : ''}`}
+              className={`week-cell ${w === curWeek ? 'w-now' : ''} ${allDone ? 'w-done' : ''} ${partial ? 'w-partial' : ''} ${wLocked ? 'w-locked' : ''}`}
               onClick={() => onChangeWeek(w)}
             >
               W{w}
