@@ -184,10 +184,10 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
 
       <style>{`
         .standard-name-block { margin: 28px 0 4px; }
-        .standard-name-label { display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
-        .standard-name-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 16px; color: #ffffff; outline: none; box-sizing: border-box; font-family: inherit; }
+        .standard-name-label { display: block; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
+        .standard-name-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 17px; color: #ffffff; outline: none; box-sizing: border-box; font-family: inherit; }
         .standard-name-input:focus { border-color: rgba(196,30,30,0.4); }
-        .standard-launch-note { margin: 24px 0 14px; padding: 14px 16px; border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 10px; text-align: center; font-size: 12px; color: #f5f0ed; line-height: 1.6; }
+        .standard-launch-note { margin: 24px 0 14px; padding: 14px 16px; border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 10px; text-align: center; font-size: 14px; color: #f5f0ed; line-height: 1.6; }
       `}</style>
     </div>
   )
