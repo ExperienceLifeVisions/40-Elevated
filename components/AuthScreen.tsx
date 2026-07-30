@@ -56,7 +56,13 @@ export default function AuthScreen() {
           <div className="auth-sent">
             <div className="auth-sent-icon">✉</div>
             <div className="auth-title">Check your email.</div>
-            <div className="auth-sub">We sent a sign-in link to <strong>{email}</strong>. Tap the link in the email to enter the app.</div>
+            <div className="auth-sub">We sent a sign-in link to <strong>{email}</strong>.</div>
+
+            <div className="spam-note">
+              <div className="spam-note-h">Check your <em>SPAM</em> folder</div>
+              <p>If it is there, tap <strong>Not Spam</strong> so the next one reaches your inbox.</p>
+            </div>
+
             <button className="auth-btn-outline" onClick={() => setSent(false)}>Use a different email</button>
           </div>
         )}
@@ -68,6 +74,7 @@ export default function AuthScreen() {
         .auth-logo-wrap { margin-bottom: 48px; }
         .auth-title { font-size: 30px; font-weight: 300; color: #ffffff; margin-bottom: 12px; }
         .auth-sub { font-size: 15px; color: #888; line-height: 1.65; margin-bottom: 32px; }
+        .auth-sub strong { color: #f5f0ed; font-weight: 600; }
         .auth-form { display: flex; flex-direction: column; gap: 12px; }
         .auth-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 17px; color: #ffffff; outline: none; box-sizing: border-box; }
         .auth-input:focus { border-color: rgba(196,30,30,0.4); }
@@ -79,6 +86,11 @@ export default function AuthScreen() {
         .auth-sent { display: flex; flex-direction: column; align-items: center; gap: 16px; }
         .auth-sent-icon { font-size: 42px; color: #c41e1e; margin-bottom: 8px; }
         .auth-btn-outline { padding: 12px 24px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 14px; cursor: pointer; margin-top: 8px; }
+        .spam-note { width: 100%; border: 1px solid rgba(196,30,30,0.5); background: rgba(196,30,30,0.09); border-radius: 12px; padding: 18px; text-align: center; box-sizing: border-box; }
+        .spam-note-h { font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 10px; letter-spacing: -0.01em; }
+        .spam-note-h em { font-style: normal; color: #e33; }
+        .spam-note p { font-size: 15px; color: #bbb; line-height: 1.6; margin: 0; }
+        .spam-note strong { color: #ffffff; font-weight: 700; }
       `}</style>
     </div>
   )
