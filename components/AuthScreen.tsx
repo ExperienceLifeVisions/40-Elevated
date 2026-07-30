@@ -66,19 +66,19 @@ export default function AuthScreen() {
         .auth-screen { min-height: 100vh; background: #0a0a0a; display: flex; align-items: center; justify-content: center; padding: 24px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
         .auth-inner { width: 100%; max-width: 360px; text-align: center; }
         .auth-logo-wrap { margin-bottom: 48px; }
-        .auth-title { font-size: 28px; font-weight: 300; color: #ffffff; margin-bottom: 12px; }
-        .auth-sub { font-size: 13px; color: #888; line-height: 1.65; margin-bottom: 32px; }
+        .auth-title { font-size: 30px; font-weight: 300; color: #ffffff; margin-bottom: 12px; }
+        .auth-sub { font-size: 15px; color: #888; line-height: 1.65; margin-bottom: 32px; }
         .auth-form { display: flex; flex-direction: column; gap: 12px; }
-        .auth-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 16px; color: #ffffff; outline: none; box-sizing: border-box; }
+        .auth-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 17px; color: #ffffff; outline: none; box-sizing: border-box; }
         .auth-input:focus { border-color: rgba(196,30,30,0.4); }
-        .auth-error { font-size: 12px; color: #c41e1e; text-align: left; padding: 0 4px; }
-        .auth-btn { width: 100%; padding: 15px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+        .auth-error { font-size: 14px; color: #c41e1e; text-align: left; padding: 0 4px; }
+        .auth-btn { width: 100%; padding: 15px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
         .auth-btn:disabled { opacity: 0.6; }
         .auth-btn:active { background: #8b1515; }
-        .auth-footer { margin-top: 32px; font-size: 10px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; }
+        .auth-footer { margin-top: 32px; font-size: 12px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; }
         .auth-sent { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-        .auth-sent-icon { font-size: 40px; color: #c41e1e; margin-bottom: 8px; }
-        .auth-btn-outline { padding: 12px 24px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 12px; cursor: pointer; margin-top: 8px; }
+        .auth-sent-icon { font-size: 42px; color: #c41e1e; margin-bottom: 8px; }
+        .auth-btn-outline { padding: 12px 24px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 14px; cursor: pointer; margin-top: 8px; }
       `}</style>
     </div>
   )
