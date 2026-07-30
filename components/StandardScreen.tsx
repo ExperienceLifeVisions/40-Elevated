@@ -1,11 +1,27 @@
 'use client'
+import { useState } from 'react'
+
 interface Props {
-  onBegin: () => void
+  onBegin: (name: string) => void
+  onClose: () => void
   onShowNourish: () => void
   hasStarted: boolean
+  savedName: string | null
 }
 
-export default function StandardScreen({ onBegin, onShowNourish, hasStarted }: Props) {
+export default function StandardScreen({ onBegin, onClose, onShowNourish, hasStarted, savedName }: Props) {
+  const [name, setName] = useState(savedName || '')
+  const needsName = !savedName
+
+  function handlePrimary() {
+    if (hasStarted) {
+      if (needsName && name.trim()) onBegin(name.trim())
+      else onClose()
+    } else {
+      onBegin(name.trim())
+    }
+  }
+
   return (
     <div className="standard-screen" id="standard-screen">
       <div className="standard-inner">
@@ -28,9 +44,6 @@ export default function StandardScreen({ onBegin, onShowNourish, hasStarted }: P
         <div className="standard-purpose">
           <p>This standard exists because a half-committed life produces a half-transformed soul. You were not saved to stay the same.</p>
           <p>You were called to become a disciple. And disciples make disciples.</p>
-          <p>40 Elevated: A Walk With Jesus is the training ground. Every morning surrendered, every meal chosen with intention, every fast, every prayer, every rep, every Word read and carried — it is all formation. It is God shaping you from the inside out into someone whose life points others toward Christ.</p>
-          <p>The world does not need more people who know about Jesus. It needs more people who look like Him.</p>
-          <p>This is how it starts. One day. One commitment. One walk.</p>
         </div>
 
         <div className="standard-section-title">Daily Commitments</div>
@@ -39,15 +52,15 @@ export default function StandardScreen({ onBegin, onShowNourish, hasStarted }: P
           <div className="standard-num">1</div>
           <div>
             <div className="standard-item-title">Morning prayer</div>
-            <div className="standard-item-desc">You do not get to give God your leftovers. He gets your first breath, your first thought, your first moment before the world speaks.</div>
+            <div className="standard-item-desc">Before the phone. Before the noise. Before the world gets a word in. Give Him the first thing, not the leftover.</div>
           </div>
         </div>
 
         <div className="standard-item">
           <div className="standard-num">2</div>
           <div>
-            <div className="standard-item-title">20 minutes of Scripture</div>
-            <div className="standard-item-desc">The Word of God is not optional reading. It is the standard by which every thought, every decision, and every day must be measured.</div>
+            <div className="standard-item-title">20 minutes in the Word</div>
+            <div className="standard-item-desc">You cannot follow a voice you do not recognize. Scripture is how you learn to recognize it.</div>
           </div>
         </div>
 
@@ -126,13 +139,36 @@ export default function StandardScreen({ onBegin, onShowNourish, hasStarted }: P
           </div>
         </div>
 
-        <button className="standard-begin" onClick={onBegin}>
+        {needsName && (
+          <div className="standard-name-block">
+            <label className="standard-name-label" htmlFor="participant-name">What should we call you?</label>
+            <input
+              id="participant-name"
+              className="standard-name-input"
+              type="text"
+              placeholder="Your name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              autoComplete="given-name"
+              maxLength={60}
+            />
+          </div>
+        )}
+
+        <button className="standard-begin" onClick={handlePrimary}>
           {hasStarted ? 'Return to Your Walk' : 'Begin Your Journey'}
         </button>
-        <button className="standard-revisit" onClick={onBegin}>
+        <button className="standard-revisit" onClick={hasStarted ? onClose : handlePrimary}>
           I have already read this
         </button>
       </div>
+
+      <style>{`
+        .standard-name-block { margin: 28px 0 4px; }
+        .standard-name-label { display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
+        .standard-name-input { width: 100%; background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px 16px; font-size: 16px; color: #ffffff; outline: none; box-sizing: border-box; font-family: inherit; }
+        .standard-name-input:focus { border-color: rgba(196,30,30,0.4); }
+      `}</style>
     </div>
   )
 }
