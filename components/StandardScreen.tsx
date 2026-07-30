@@ -132,7 +132,7 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
           <div className="standard-num" style={{ background: 'none', border: '0.5px solid var(--border-red)', color: 'var(--red)' }}>+</div>
           <div>
             <div className="standard-item-title">Sabbath hour</div>
-            <div className="standard-item-desc">Rest is not weakness. It is obedience. God commanded it because He knows what you will not stop to admit.</div>
+            <div className="standard-item-desc">A weekly invitation to step away from work, quiet the noise, and turn your attention to Christ. Your worth is not found in what you accomplish, but in the grace of God.</div>
           </div>
         </div>
 
