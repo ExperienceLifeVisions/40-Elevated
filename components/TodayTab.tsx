@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useState } from 'react'
 import { COMMITMENTS, APPROACH_NAMES, formatDate, PROGRAM_DAYS } from '../lib/data'
 
 interface Verse { verse: string; ref: string }
@@ -22,6 +23,15 @@ export default function TodayTab({
   curDay, todayNum, startDate, completions, nutritionApproach,
   onToggle, onChangeDay, onShowInstall, onReturnToStandard, weeklyVerses, weekNum, locked
 }: Props) {
+  // True only when running from the home screen icon, false in any browser tab.
+  const [installed, setInstalled] = useState(false)
+  useEffect(() => {
+    const standalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as { standalone?: boolean }).standalone === true
+    setInstalled(standalone)
+  }, [])
+
   const dayCompletions = completions[curDay] || {}
   const done = COMMITMENTS.filter(c => dayCompletions[c.id]).length
   const pct = Math.round((done / COMMITMENTS.length) * 100)
@@ -40,14 +50,16 @@ export default function TodayTab({
 
   return (
     <div id="tab-today">
-      <div className="install-row" id="install-row">
-        <div className="install-row-icon">📲</div>
-        <div className="install-row-text">
-          <strong>Add to Home Screen</strong>
-          <span>Use like a native app. No App Store needed.</span>
+      {!installed && (
+        <div className="install-row" id="install-row">
+          <div className="install-row-icon">📲</div>
+          <div className="install-row-text">
+            <strong>Add to Home Screen</strong>
+            <span>Use like a native app. No App Store needed.</span>
+          </div>
+          <button type="button" className="install-row-btn" onClick={onShowInstall}>How →</button>
         </div>
-        <button type="button" className="install-row-btn" onClick={onShowInstall}>How →</button>
-      </div>
+      )}
 
       {currentVerse && (
         <div className="verse-banner visible">
