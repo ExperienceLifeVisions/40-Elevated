@@ -75,27 +75,35 @@ export default function InstallScreen({ onClose }: { onClose: () => void }) {
 
         <div className="find-row">
           <div className="find-card">
-            <div className="find-ic">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <div className="find-ic red">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13" />
               </svg>
             </div>
             <div className="find-lb">This icon</div>
           </div>
           <div className="find-card">
-            <div className="find-ic">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="5" r="2" />
-                <circle cx="12" cy="12" r="2" />
-                <circle cx="12" cy="19" r="2" />
+            <div className="find-ic white">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="5" cy="12" r="2.2" />
+                <circle cx="12" cy="12" r="2.2" />
+                <circle cx="19" cy="12" r="2.2" />
               </svg>
             </div>
             <div className="find-lb">Or this menu,<br />then tap Share</div>
           </div>
         </div>
-        <div className="find-hint">Look along the top or bottom edge of your screen.</div>
 
-        <div className="install-step" style={{ marginTop: 22 }}>
+        <div className="look-below">
+          <div className="look-lb">Look at the bar below.</div>
+          <div className="look-ar">
+            <svg width="34" height="46" viewBox="0 0 34 46" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 3v32M5 26l12 12 12-12" />
+            </svg>
+          </div>
+        </div>
+
+        <div className="install-step" style={{ marginTop: 24 }}>
           <div className="install-step-num">2</div>
           <div className="install-step-text">Scroll the list and tap <strong>Add to Home Screen</strong></div>
         </div>
@@ -111,9 +119,13 @@ export default function InstallScreen({ onClose }: { onClose: () => void }) {
       <style>{`
         .find-row { display: flex; gap: 10px; margin: 14px 0 4px; }
         .find-card { flex: 1; border: 0.5px solid rgba(255,255,255,0.1); background: #141414; border-radius: 12px; padding: 18px 12px; text-align: center; }
-        .find-ic { color: #e33; margin-bottom: 10px; display: flex; justify-content: center; }
+        .find-ic { margin-bottom: 12px; display: flex; justify-content: center; }
+        .find-ic.red { color: #e33; }
+        .find-ic.white { color: #ffffff; }
         .find-lb { font-size: 14px; color: #f5f0ed; font-weight: 600; line-height: 1.35; }
-        .find-hint { text-align: center; font-size: 13px; color: #888; margin-top: 12px; }
+        .look-below { text-align: center; margin-top: 24px; }
+        .look-lb { font-size: 16px; color: #f5f0ed; font-weight: 700; line-height: 1.5; }
+        .look-ar { display: flex; justify-content: center; margin-top: 10px; color: #e33; }
         .trouble-btn { display: block; width: 100%; padding: 17px; background: #ffffff; color: #c41e1e; border: none; border-radius: 10px; font-size: 16px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; margin-top: 30px; }
         .trouble-btn:active { opacity: 0.85; }
       `}</style>
