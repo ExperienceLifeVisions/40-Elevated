@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 
+const VIDEO_EMBED = 'https://www.loom.com/embed/d8f526d3ef3f4d8eb215af9f425b2bd7'
+
 interface Props {
   onBegin: (name: string) => void
   onClose: () => void
@@ -13,6 +15,7 @@ interface Props {
 
 export default function StandardScreen({ onBegin, onClose, onShowNourish, hasStarted, savedName, beforeLaunch, launchLabel }: Props) {
   const [name, setName] = useState(savedName || '')
+  const [showVideo, setShowVideo] = useState(false)
   const needsName = !savedName
 
   function handlePrimary() {
@@ -55,6 +58,11 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
         )}
 
         <img src="/logo.png" alt="40 Elevated" className="standard-logo" />
+
+        {/* The image is the button. Nothing loads from Loom until it is tapped. */}
+        <button type="button" className="vid-card" onClick={() => setShowVideo(true)} aria-label="Play the welcome video">
+          <img src="/video-thumb.jpg" alt="A word from Pastor Denis Armstrong" />
+        </button>
 
         <div className="standard-verse">
           "Come near to God and He will come near to you."
@@ -189,6 +197,20 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
         </button>
       </div>
 
+      {showVideo && (
+        <div className="vid-screen" onClick={() => setShowVideo(false)}>
+          <div className="vid-frame" onClick={e => e.stopPropagation()}>
+            <iframe
+              src={VIDEO_EMBED}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              title="A word from Pastor Denis Armstrong"
+            />
+          </div>
+          <button type="button" className="vid-close" onClick={() => setShowVideo(false)}>Close</button>
+        </div>
+      )}
+
       <style>{`
         .standard-name-block { margin: 28px 0 4px; }
         .standard-name-label { display: block; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
@@ -201,6 +223,13 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
         .sw-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #e33; margin-bottom: 8px; }
         .sw-date { font-size: 19px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
         .sw-note { font-size: 13px; color: #999; line-height: 1.55; }
+        .vid-card { display: block; width: 100%; padding: 0; border: 0.5px solid rgba(255,255,255,0.1); border-radius: 14px; overflow: hidden; background: #000; margin-bottom: 26px; cursor: pointer; }
+        .vid-card img { width: 100%; height: auto; display: block; }
+        .vid-card:active { opacity: 0.85; }
+        .vid-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.93); z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .vid-frame { width: 100%; max-width: 380px; aspect-ratio: 16 / 9; background: #000; border-radius: 14px; overflow: hidden; border: 0.5px solid rgba(255,255,255,0.12); }
+        .vid-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+        .vid-close { margin-top: 22px; padding: 14px 34px; background: none; border: 0.5px solid rgba(255,255,255,0.2); border-radius: 10px; color: #ccc; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
       `}</style>
     </div>
   )
