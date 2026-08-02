@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 
-const VIDEO_EMBED = 'https://www.loom.com/embed/d8f526d3ef3f4d8eb215af9f425b2bd7'
+const VIDEO_EMBED = 'https://www.youtube.com/embed/ZZPW4t1miug?rel=0&playsinline=1'
 
 interface Props {
   onBegin: (name: string) => void
@@ -59,7 +59,7 @@ export default function StandardScreen({ onBegin, onClose, onShowNourish, hasSta
 
         <img src="/logo.png" alt="40 Elevated" className="standard-logo" />
 
-        {/* The image is the button. Nothing loads from Loom until it is tapped. */}
+        {/* The image is the button. Nothing loads from YouTube until it is tapped. */}
         <button type="button" className="vid-card" onClick={() => setShowVideo(true)} aria-label="Play the welcome video">
           <img src="/video-thumb.jpg" alt="A word from Pastor Denis Armstrong" />
         </button>
