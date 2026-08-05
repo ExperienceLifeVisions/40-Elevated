@@ -220,14 +220,32 @@ export default function App({ user }: AppProps) {
   }
 
   async function saveNutrition(approach: string, declaration: string) {
+    const { data: fresh, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (error) {
+      setLoadFailed(true)
+      return
+    }
+
     await supabase.from('user_profiles').upsert({
       id: user.id,
-      name: profile.name,
-      start_date: profile.start_date,
+      name: fresh?.name ?? profile.name,
+      start_date: fresh?.start_date ?? profile.start_date,
       nutrition_approach: approach,
       nutrition_declaration: declaration,
     })
-    setProfile(p => ({ ...p, nutrition_approach: approach, nutrition_declaration: declaration }))
+
+    setProfile(p => ({
+      ...p,
+      name: fresh?.name ?? p.name,
+      start_date: fresh?.start_date ?? p.start_date,
+      nutrition_approach: approach,
+      nutrition_declaration: declaration,
+    }))
   }
 
   if (loading) {
