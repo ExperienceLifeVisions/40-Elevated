@@ -50,8 +50,6 @@ export default function App({ user }: AppProps) {
   const [loadFailed, setLoadFailed] = useState(false)
   const [dateCheck, setDateCheck] = useState(0)
 
-  // Re-check the date whenever the app comes back to the foreground. A phone
-  // left open overnight would otherwise still believe it is yesterday.
   useEffect(() => {
     function onVisible() {
       if (document.visibilityState === 'visible') setDateCheck(c => c + 1)
@@ -71,8 +69,6 @@ export default function App({ user }: AppProps) {
       supabase.from('weekly_data').select('*').eq('user_id', user.id),
     ])
 
-    // If the profile request FAILED we do not know whether this person has
-    // started. Never guess. Guessing here once reset four participants to Day 1.
     if (profileRes.error) {
       setLoadFailed(true)
       setLoading(false)
@@ -87,7 +83,6 @@ export default function App({ user }: AppProps) {
         setCurDay(dayNumber(sd))
         setCurWeek(weekNumber(sd))
       }
-      // Show the declaration until we know what to call them.
       if (!profileRes.data.name) setShowStandard(true)
     } else {
       setShowStandard(true)
@@ -119,10 +114,6 @@ export default function App({ user }: AppProps) {
 
   useEffect(() => { loadData() }, [loadData])
 
-  // Saves the name. Sets the start date only when the launch date has arrived
-  // and there is not one already. Before writing anything this re-reads the
-  // profile straight from the database, because the copy held in the browser
-  // may be stale or may never have loaded.
   async function beginJourney(name: string) {
     const { data: fresh, error } = await supabase
       .from('user_profiles')
@@ -130,7 +121,6 @@ export default function App({ user }: AppProps) {
       .eq('id', user.id)
       .maybeSingle()
 
-    // Could not confirm. Do nothing rather than risk overwriting a start date.
     if (error) {
       setLoadFailed(true)
       return
@@ -166,7 +156,6 @@ export default function App({ user }: AppProps) {
     setShowStandard(false)
   }
 
-  // Returning participants just close the screen. No database write at all.
   function closeStandard() {
     setShowStandard(false)
   }
@@ -209,7 +198,6 @@ export default function App({ user }: AppProps) {
   }
 
   async function toggleWeekly(weekNum: number, commitmentId: string) {
-    // A week cannot be completed before its days have arrived.
     if (!startDate) return
     if (weekNum > weekNumber(startDate)) return
 
@@ -250,8 +238,6 @@ export default function App({ user }: AppProps) {
     )
   }
 
-  // The connection failed. Show a retry rather than pretending this is a new
-  // participant, which is what caused start dates to be overwritten.
   if (loadFailed) {
     return (
       <div className="load-fail">
@@ -270,10 +256,7 @@ export default function App({ user }: AppProps) {
     )
   }
 
-  // No start date means preview mode: everything visible, nothing tickable.
   const locked = !startDate
-  // Something for the tabs to render dates against. Before launch that is the
-  // launch date, so the header reads Day 1 with the real first day beside it.
   const displayDate = startDate ?? (beforeLaunch ? parseLocalDate(LAUNCH_DATE) : today())
   const todayNum = startDate ? dayNumber(startDate) : 1
 
@@ -345,3 +328,68 @@ export default function App({ user }: AppProps) {
             locked={locked}
           />
         )}
+        {activeTab === 'weekly' && (
+          <WeeklyTab
+            curWeek={curWeek}
+            startDate={displayDate}
+            weeklyData={weeklyData}
+            onToggle={toggleWeekly}
+            onChangeWeek={setCurWeek}
+            onReturnToStandard={() => setShowStandard(true)}
+            locked={locked}
+          />
+        )}
+        {activeTab === 'journey' && (
+          <JourneyTab
+            startDate={displayDate}
+            completions={completions}
+            todayNum={todayNum}
+            onSelectDay={(day) => { setCurDay(day); setActiveTab('today') }}
+            onReturnToStandard={() => setShowStandard(true)}
+            locked={locked}
+          />
+        )}
+        {activeTab === 'promise' && (
+          <PromiseTab onReturnToStandard={() => setShowStandard(true)} />
+        )}
+
+        <button type="button" className="help-trigger" onClick={() => setShowHelp(true)}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m2 7 10 6 10-6" />
+          </svg>
+          <span>Help?</span>
+        </button>
+      </div>
+
+      {showShare && <ShareModal onClose={() => setShowShare(false)} />}
+      {showInstall && <InstallScreen onClose={() => setShowInstall(false)} />}
+      {showHelp && <HelpScreen onClose={() => setShowHelp(false)} />}
+      {showNourish && (
+        <NourishScreen
+          approach={profile.nutrition_approach || ''}
+          declaration={profile.nutrition_declaration || ''}
+          onSave={saveNutrition}
+          onClose={() => setShowNourish(false)}
+        />
+      )}
+      {showDayComplete && (
+        <DayCompleteScreen
+          day={completedDay}
+          onClose={() => setShowDayComplete(false)}
+        />
+      )}
+
+      <style>{`
+        .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+        .help-trigger:active { border-color: rgba(196,30,30,0.4); color: #e33; }
+        .preview-banner { border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 12px; padding: 15px 16px; text-align: center; margin-bottom: 18px; }
+        .pb-eyebrow { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: #e33; margin-bottom: 7px; }
+        .pb-date { font-size: 16px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
+        .pb-note { font-size: 11px; color: #888; line-height: 1.6; }
+        .pb-btn { display: block; width: 100%; padding: 14px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 12px; }
+        .pb-btn:active { background: #8b1515; }
+      `}</style>
+    </div>
+  )
+}
