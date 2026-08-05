@@ -47,6 +47,7 @@ export default function App({ user }: AppProps) {
   const [showHelp, setShowHelp] = useState(false)
   const [completedDay, setCompletedDay] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [dateCheck, setDateCheck] = useState(0)
 
   // Re-check the date whenever the app comes back to the foreground. A phone
@@ -63,11 +64,20 @@ export default function App({ user }: AppProps) {
   const launchLabel = useMemo(() => launchDateLabel(), [])
 
   const loadData = useCallback(async () => {
+    setLoadFailed(false)
     const [profileRes, completionsRes, weeklyRes] = await Promise.all([
       supabase.from('user_profiles').select('*').eq('id', user.id).maybeSingle(),
       supabase.from('daily_completions').select('*').eq('user_id', user.id),
       supabase.from('weekly_data').select('*').eq('user_id', user.id),
     ])
+
+    // If the profile request FAILED we do not know whether this person has
+    // started. Never guess. Guessing here once reset four participants to Day 1.
+    if (profileRes.error) {
+      setLoadFailed(true)
+      setLoading(false)
+      return
+    }
 
     if (profileRes.data) {
       setProfile(profileRes.data)
@@ -110,28 +120,48 @@ export default function App({ user }: AppProps) {
   useEffect(() => { loadData() }, [loadData])
 
   // Saves the name. Sets the start date only when the launch date has arrived
-  // and there is not one already. Revisiting The Standard must never reset
-  // an existing participant to Day 1.
+  // and there is not one already. Before writing anything this re-reads the
+  // profile straight from the database, because the copy held in the browser
+  // may be stale or may never have loaded.
   async function beginJourney(name: string) {
-    const alreadyStarted = !!profile.start_date
-    let sdStr = profile.start_date
+    const { data: fresh, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    // Could not confirm. Do nothing rather than risk overwriting a start date.
+    if (error) {
+      setLoadFailed(true)
+      return
+    }
+
+    const existingStart = fresh?.start_date ?? null
+    const alreadyStarted = !!existingStart
+    let sdStr = existingStart
     if (!alreadyStarted && !beforeLaunch) sdStr = localDateStr(today())
 
     await supabase.from('user_profiles').upsert({
       id: user.id,
-      name: name || profile.name,
+      name: name || fresh?.name || profile.name,
       start_date: sdStr,
-      nutrition_approach: profile.nutrition_approach,
-      nutrition_declaration: profile.nutrition_declaration,
+      nutrition_approach: fresh?.nutrition_approach ?? profile.nutrition_approach,
+      nutrition_declaration: fresh?.nutrition_declaration ?? profile.nutrition_declaration,
     })
 
-    setProfile(p => ({ ...p, name: name || p.name, start_date: sdStr }))
+    setProfile(p => ({
+      ...p,
+      name: name || fresh?.name || p.name,
+      start_date: sdStr,
+      nutrition_approach: fresh?.nutrition_approach ?? p.nutrition_approach,
+      nutrition_declaration: fresh?.nutrition_declaration ?? p.nutrition_declaration,
+    }))
 
-    if (!alreadyStarted && sdStr) {
+    if (sdStr) {
       const sd = parseLocalDate(sdStr)
       setStartDate(sd)
-      setCurDay(1)
-      setCurWeek(1)
+      setCurDay(dayNumber(sd))
+      setCurWeek(weekNumber(sd))
     }
     setShowStandard(false)
   }
@@ -220,6 +250,26 @@ export default function App({ user }: AppProps) {
     )
   }
 
+  // The connection failed. Show a retry rather than pretending this is a new
+  // participant, which is what caused start dates to be overwritten.
+  if (loadFailed) {
+    return (
+      <div className="load-fail">
+        <img src="/logo.png" alt="40 Elevated" />
+        <div className="lf-title">Cannot reach your walk.</div>
+        <div className="lf-sub">Check your connection and try again. Nothing has been lost.</div>
+        <button type="button" className="lf-btn" onClick={() => { setLoading(true); loadData() }}>Try again</button>
+        <style>{`
+          .load-fail { min-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+          .load-fail img { width: 180px; height: auto; margin-bottom: 40px; }
+          .lf-title { font-size: 26px; font-weight: 300; color: #ffffff; margin-bottom: 12px; }
+          .lf-sub { font-size: 15px; color: #888; line-height: 1.65; margin-bottom: 32px; max-width: 300px; }
+          .lf-btn { padding: 15px 36px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+        `}</style>
+      </div>
+    )
+  }
+
   // No start date means preview mode: everything visible, nothing tickable.
   const locked = !startDate
   // Something for the tabs to render dates against. Before launch that is the
@@ -295,68 +345,3 @@ export default function App({ user }: AppProps) {
             locked={locked}
           />
         )}
-        {activeTab === 'weekly' && (
-          <WeeklyTab
-            curWeek={curWeek}
-            startDate={displayDate}
-            weeklyData={weeklyData}
-            onToggle={toggleWeekly}
-            onChangeWeek={setCurWeek}
-            onReturnToStandard={() => setShowStandard(true)}
-            locked={locked}
-          />
-        )}
-        {activeTab === 'journey' && (
-          <JourneyTab
-            startDate={displayDate}
-            completions={completions}
-            todayNum={todayNum}
-            onSelectDay={(day) => { setCurDay(day); setActiveTab('today') }}
-            onReturnToStandard={() => setShowStandard(true)}
-            locked={locked}
-          />
-        )}
-        {activeTab === 'promise' && (
-          <PromiseTab onReturnToStandard={() => setShowStandard(true)} />
-        )}
-
-        <button type="button" className="help-trigger" onClick={() => setShowHelp(true)}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2" />
-            <path d="m2 7 10 6 10-6" />
-          </svg>
-          <span>Help?</span>
-        </button>
-      </div>
-
-      {showShare && <ShareModal onClose={() => setShowShare(false)} />}
-      {showInstall && <InstallScreen onClose={() => setShowInstall(false)} />}
-      {showHelp && <HelpScreen onClose={() => setShowHelp(false)} />}
-      {showNourish && (
-        <NourishScreen
-          approach={profile.nutrition_approach || ''}
-          declaration={profile.nutrition_declaration || ''}
-          onSave={saveNutrition}
-          onClose={() => setShowNourish(false)}
-        />
-      )}
-      {showDayComplete && (
-        <DayCompleteScreen
-          day={completedDay}
-          onClose={() => setShowDayComplete(false)}
-        />
-      )}
-
-      <style>{`
-        .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .help-trigger:active { border-color: rgba(196,30,30,0.4); color: #e33; }
-        .preview-banner { border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 12px; padding: 15px 16px; text-align: center; margin-bottom: 18px; }
-        .pb-eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #e33; margin-bottom: 7px; }
-        .pb-date { font-size: 17px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
-        .pb-note { font-size: 13px; color: #888; line-height: 1.6; }
-        .pb-btn { display: block; width: 100%; padding: 14px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 12px; }
-        .pb-btn:active { background: #8b1515; }
-      `}</style>
-    </div>
-  )
-}
