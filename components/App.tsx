@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react'
 import type { User } from '@supabase/supabase-js'
 import { createClient } from '../lib/supabase'
 import {
-  COMMITMENTS, WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, APPROACH_NAMES,
+  COMMITMENTS, WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, APPROACH_NAMES, PROGRAM_DAYS,
   today, parseLocalDate, dayNumber, weekNumber, dayKey, formatDate, weekRange, localDateStr,
   LAUNCH_DATE, isBeforeLaunch, launchDateLabel
 } from '../lib/data'
@@ -16,6 +16,7 @@ import ShareModal from './ShareModal'
 import InstallScreen from './InstallScreen'
 import NourishScreen from './NourishScreen'
 import DayCompleteScreen from './DayCompleteScreen'
+import StandardInviteScreen from './StandardInviteScreen'
 import HelpScreen from './HelpScreen'
 
 type Tab = 'today' | 'weekly' | 'journey' | 'promise'
@@ -25,6 +26,7 @@ interface Profile {
   start_date: string | null
   nutrition_approach: string | null
   nutrition_declaration: string | null
+  standard_entered_at: string | null
 }
 
 interface AppProps { user: User }
@@ -32,7 +34,7 @@ interface AppProps { user: User }
 export default function App({ user }: AppProps) {
   const supabase = createClient()
 
-  const [profile, setProfile] = useState<Profile>({ name: null, start_date: null, nutrition_approach: null, nutrition_declaration: null })
+  const [profile, setProfile] = useState<Profile>({ name: null, start_date: null, nutrition_approach: null, nutrition_declaration: null, standard_entered_at: null })
   const [completions, setCompletions] = useState<Record<string, Record<string, boolean>>>({})
   const [weeklyData, setWeeklyData] = useState<Record<number, Record<string, boolean>>>({})
   const [startDate, setStartDate] = useState<Date | null>(null)
@@ -44,6 +46,7 @@ export default function App({ user }: AppProps) {
   const [showInstall, setShowInstall] = useState(false)
   const [showNourish, setShowNourish] = useState(false)
   const [showDayComplete, setShowDayComplete] = useState(false)
+  const [showStandardInvite, setShowStandardInvite] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [completedDay, setCompletedDay] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -79,9 +82,15 @@ export default function App({ user }: AppProps) {
       setProfile(profileRes.data)
       if (profileRes.data.start_date) {
         const sd = parseLocalDate(profileRes.data.start_date)
+        const entered = !!profileRes.data.standard_entered_at
         setStartDate(sd)
-        setCurDay(dayNumber(sd))
-        setCurWeek(weekNumber(sd))
+        setCurDay(dayNumber(sd, today(), !entered))
+        setCurWeek(weekNumber(sd, !entered))
+        // Safety net: their 40 days are over but they have not stepped into
+        // The Standard yet, so the app opens on the invitation until they do.
+        if (!entered && dayNumber(sd, today(), false) > PROGRAM_DAYS) {
+          setShowStandardInvite(true)
+        }
       }
       if (!profileRes.data.name) setShowStandard(true)
     } else {
@@ -160,9 +169,31 @@ export default function App({ user }: AppProps) {
     setShowStandard(false)
   }
 
+  async function enterStandard() {
+    const enteredAt = new Date().toISOString()
+    const { error } = await supabase
+      .from('user_profiles')
+      .update({ standard_entered_at: enteredAt })
+      .eq('id', user.id)
+
+    // If the save could not reach the server, leave the invitation open.
+    // The button comes back to life and they can simply tap again.
+    if (error) return
+
+    setProfile(p => ({ ...p, standard_entered_at: enteredAt }))
+    setShowStandardInvite(false)
+    setShowDayComplete(false)
+    if (startDate) {
+      setCurDay(dayNumber(startDate, today(), false))
+      setCurWeek(weekNumber(startDate, false))
+    }
+    setActiveTab('today')
+  }
+
   async function toggleCommitment(dayNum: number, commitmentId: string) {
     if (!startDate) return
-    const todayNum = dayNumber(startDate)
+    // Uncapped for people in The Standard, so Day 41 and beyond stay checkable.
+    const todayNum = dayNumber(startDate, today(), !profile.standard_entered_at)
     if (dayNum > todayNum) return
 
     const currentlyDone = completions[dayNum]?.[commitmentId] ?? false
@@ -199,7 +230,7 @@ export default function App({ user }: AppProps) {
 
   async function toggleWeekly(weekNum: number, commitmentId: string) {
     if (!startDate) return
-    if (weekNum > weekNumber(startDate)) return
+    if (weekNum > weekNumber(startDate, !profile.standard_entered_at)) return
 
     const currentlyDone = weeklyData[weekNum]?.[commitmentId] ?? false
     const newValue = !currentlyDone
@@ -276,7 +307,8 @@ export default function App({ user }: AppProps) {
 
   const locked = !startDate
   const displayDate = startDate ?? (beforeLaunch ? parseLocalDate(LAUNCH_DATE) : today())
-  const todayNum = startDate ? dayNumber(startDate) : 1
+  const inStandard = !!profile.standard_entered_at
+  const todayNum = startDate ? dayNumber(startDate, today(), !inStandard) : 1
 
   return (
     <div className="app">
@@ -293,7 +325,7 @@ export default function App({ user }: AppProps) {
       )}
 
       <div className="header" style={{ position: 'relative' }}>
-        <img src="/logo.png" alt="40 Elevated" style={{ width: 160, height: 'auto', display: 'block', margin: '0 auto' }} />
+        <img src={inStandard ? '/the-standard.png' : '/logo.png'} alt={inStandard ? 'The Standard' : '40 Elevated'} style={{ width: 160, height: 'auto', display: 'block', margin: '0 auto' }} />
         <button className="share-btn" onClick={() => setShowShare(true)} aria-label="Share">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/>
@@ -395,19 +427,6 @@ export default function App({ user }: AppProps) {
         <DayCompleteScreen
           day={completedDay}
           onClose={() => setShowDayComplete(false)}
+          onBeginStandard={() => { setShowDayComplete(false); setShowStandardInvite(true) }}
         />
       )}
-
-      <style>{`
-        .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .help-trigger:active { border-color: rgba(196,30,30,0.4); color: #e33; }
-        .preview-banner { border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 12px; padding: 15px 16px; text-align: center; margin-bottom: 18px; }
-        .pb-eyebrow { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: #e33; margin-bottom: 7px; }
-        .pb-date { font-size: 16px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
-        .pb-note { font-size: 11px; color: #888; line-height: 1.6; }
-        .pb-btn { display: block; width: 100%; padding: 14px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 12px; }
-        .pb-btn:active { background: #8b1515; }
-      `}</style>
-    </div>
-  )
-}
