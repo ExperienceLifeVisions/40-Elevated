@@ -1,8 +1,9 @@
-const CACHE_NAME = 'forty-elevated-v1'
+const CACHE_NAME = 'forty-elevated-v2'
 const CORE_ASSETS = [
   '/',
   '/manifest.json',
   '/logo.png',
+  '/the-standard.png',
   '/apple-touch-icon.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
@@ -31,7 +32,7 @@ self.addEventListener('fetch', (event) => {
       .then((response) => {
         const copy = response.clone()
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => {})
-        return response
+      return response
       })
       .catch(() => caches.match(event.request).then((cached) => cached || caches.match('/')))
   )
