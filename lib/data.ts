@@ -98,12 +98,21 @@ export function parseLocalDate(s: string): Date {
   return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]))
 }
 
-export function dayNumber(startDate: Date, currentDate: Date = today()): number {
-  return Math.max(1, Math.min(PROGRAM_DAYS, Math.floor((currentDate.getTime() - startDate.getTime()) / 86400000) + 1))
+// capped=true (the default) stops the count at Day 40, which is correct for
+// everyone still inside the 40 days. Pass capped=false only for people who
+// have entered The Standard, so their count continues: 41, 42, and onward.
+export function dayNumber(startDate: Date, currentDate: Date = today(), capped: boolean = true): number {
+  const raw = Math.floor((currentDate.getTime() - startDate.getTime()) / 86400000) + 1
+  if (capped) return Math.max(1, Math.min(PROGRAM_DAYS, raw))
+  return Math.max(1, raw)
 }
 
-export function weekNumber(startDate: Date): number {
-  return Math.max(1, Math.min(PROGRAM_WEEKS, Math.ceil(dayNumber(startDate) / 7)))
+// Same idea as dayNumber: capped=true stops at Week 6 for the 40-day walk,
+// capped=false lets weeks continue counting inside The Standard.
+export function weekNumber(startDate: Date, capped: boolean = true): number {
+  const week = Math.ceil(dayNumber(startDate, today(), capped) / 7)
+  if (capped) return Math.max(1, Math.min(PROGRAM_WEEKS, week))
+  return Math.max(1, week)
 }
 
 export function dayKey(startDate: Date, day: number): string {
