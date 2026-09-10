@@ -32,6 +32,13 @@ export default function TodayTab({
     setInstalled(standalone)
   }, [])
 
+  // The Standard: once someone has entered, App.tsx sends an uncapped todayNum,
+  // so a value past 40 is itself the signal that this person lives in The
+  // Standard now. No new prop needed.
+  const standardMode = todayNum > PROGRAM_DAYS
+  const maxDay = standardMode ? todayNum : PROGRAM_DAYS
+  const sinceLabel = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+
   const dayCompletions = completions[curDay] || {}
   const done = COMMITMENTS.filter(c => dayCompletions[c.id]).length
   const pct = Math.round((done / COMMITMENTS.length) * 100)
@@ -61,7 +68,7 @@ export default function TodayTab({
         </div>
       )}
 
-      {currentVerse && (
+      {!standardMode && currentVerse && (
         <div className="verse-banner visible">
           <div className="verse-banner-text">{currentVerse.verse}</div>
           <div style={{ fontSize: 12, color: 'var(--red)', marginTop: 5, letterSpacing: '0.06em' }}>{currentVerse.ref}</div>
@@ -73,8 +80,13 @@ export default function TodayTab({
         <div className="day-center">
           <div className="day-number">Day <span>{curDay}</span></div>
           <div className="day-date">{formatDate(startDate, curDay)}</div>
+          {standardMode && (
+            <div style={{ fontSize: 12, color: '#555', marginTop: 3, letterSpacing: '0.06em' }}>
+              Walking with Christ since {sinceLabel}
+            </div>
+          )}
         </div>
-        <button className="nav-btn" onClick={() => onChangeDay(Math.min(PROGRAM_DAYS, curDay + 1))}>›</button>
+        <button className="nav-btn" onClick={() => onChangeDay(Math.min(maxDay, curDay + 1))}>›</button>
       </div>
 
       <div style={{ marginBottom: 16 }}>
@@ -105,7 +117,7 @@ export default function TodayTab({
               </div>
               <div>
                 <div className="commit-title">{c.title}</div>
-                <div className="commit-desc">{c.id === 'nourish' ? getNourishDesc() : c.desc}</div>
+                <div className="commit-desc">{c.id === 'nutrition' ? getNourishDesc() : c.desc}</div>
               </div>
             </div>
           )
