@@ -86,7 +86,8 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
       const date = new Date(startDate)
       date.setDate(date.getDate() + dayN - 1)
       const dc = completions[dayN] || {}
-      const isDone = COMMITMENTS.every(c => dc[c.id])
+      // A day counts when they showed up and did even one thing.
+      const isDone = COMMITMENTS.some(c => dc[c.id])
       return {
         dayN,
         letter: date.toLocaleDateString('en-US', { weekday: 'narrow' }),
@@ -100,7 +101,7 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
       let s = 0
       for (let d = todayNum; d >= 1; d--) {
         const dc = completions[d] || {}
-        if (COMMITMENTS.every(c => dc[c.id])) s++
+        if (COMMITMENTS.some(c => dc[c.id])) s++
         else if (d === todayNum) continue
         else break
       }
