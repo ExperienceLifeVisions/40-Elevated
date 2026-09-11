@@ -29,29 +29,31 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
     return COMMITMENTS.some(c => dc[c.id])
   }
 
-  const streak = (() => {
-    if (locked) return 0
-    let s = 0
-    for (let d = reached; d >= 1; d--) {
-      if (isDayCounted(d)) s++
-      else if (d === reached) continue
-      else break
-    }
-    return s
-  })()
-
   // ─────────────────────────────────────────────────────────────
   // THE STANDARD VIEW: streak first, growing grid, the first 40
   // ─────────────────────────────────────────────────────────────
   const standardMode = !locked && todayNum > PROGRAM_DAYS
 
   if (standardMode) {
-    const daysWalked = Array.from({ length: todayNum }, (_, i) => i + 1).filter(isDayCounted).length
+    // Streaks belong to The Standard: they begin at Day 41. The first 40
+    // days are a completed season, honored in The First 40 below, not
+    // carried into these numbers.
+    const streak = (() => {
+      let s = 0
+      for (let d = reached; d >= PROGRAM_DAYS + 1; d--) {
+        if (isDayCounted(d)) s++
+        else if (d === reached) continue
+        else break
+      }
+      return s
+    })()
+
+    const daysWalked = Array.from({ length: todayNum - PROGRAM_DAYS }, (_, i) => PROGRAM_DAYS + i + 1).filter(isDayCounted).length
 
     const bestStreak = (() => {
       let best = 0
       let run = 0
-      for (let d = 1; d <= todayNum; d++) {
+      for (let d = PROGRAM_DAYS + 1; d <= todayNum; d++) {
         if (isDayCounted(d)) { run++; if (run > best) best = run }
         else run = 0
       }
@@ -61,7 +63,7 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
     const thisWeek = Math.max(1, Math.ceil(todayNum / 7))
     const weekFirst = (thisWeek - 1) * 7 + 1
     const thisWeekCount = Array.from({ length: 7 }, (_, i) => weekFirst + i)
-      .filter(d => d <= todayNum && isDayCounted(d)).length
+      .filter(d => d > PROGRAM_DAYS && d <= todayNum && isDayCounted(d)).length
 
     let gridEnd = PROGRAM_DAYS + Math.ceil((todayNum - PROGRAM_DAYS) / 7) * 7
     if (gridEnd === todayNum) gridEnd += 7
@@ -125,7 +127,7 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
         <div className="jn-first40" onClick={() => setShowFirst40(v => !v)}>
           <div>
             <div className="jn-first40-title">40 Elevated</div>
-            <div className="jn-first40-sub">{startLabel} to {day40Label} · Tap to {showFirst40 ? 'hide' : 'see'} your 40-day grid</div>
+            <div className="jn-first40-sub">{first40Complete >= PROGRAM_DAYS ? 'Complete · ' : ''}{startLabel} to {day40Label} · Tap to {showFirst40 ? 'hide' : 'see'} your 40-day grid</div>
           </div>
           <div className="jn-first40-badge">{first40Complete}/{PROGRAM_DAYS}</div>
         </div>
