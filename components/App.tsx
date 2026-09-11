@@ -381,6 +381,8 @@ export default function App({ user }: AppProps) {
         {activeTab === 'weekly' && (
           <WeeklyTab
             curWeek={curWeek}
+            completions={completions}
+            inStandard={inStandard}
             startDate={displayDate}
             weeklyData={weeklyData}
             onToggle={toggleWeekly}
@@ -430,7 +432,7 @@ export default function App({ user }: AppProps) {
           onBeginStandard={() => { setShowDayComplete(false); setShowStandardInvite(true) }}
         />
       )}
-            {showStandardInvite && <StandardInviteScreen onEnter={enterStandard} />}
+      {showStandardInvite && <StandardInviteScreen onEnter={enterStandard} />}
 
       <style>{`
         .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
