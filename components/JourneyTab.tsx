@@ -23,11 +23,17 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
     return COMMITMENTS.every(c => dc[c.id])
   }
 
+  // The Standard counts a day when they showed up and did even one thing.
+  const isDayCounted = (d: number) => {
+    const dc = completions[d] || {}
+    return COMMITMENTS.some(c => dc[c.id])
+  }
+
   const streak = (() => {
     if (locked) return 0
     let s = 0
     for (let d = reached; d >= 1; d--) {
-      if (isDayDone(d)) s++
+      if (isDayCounted(d)) s++
       else if (d === reached) continue
       else break
     }
@@ -40,13 +46,13 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
   const standardMode = !locked && todayNum > PROGRAM_DAYS
 
   if (standardMode) {
-    const daysWalked = Array.from({ length: todayNum }, (_, i) => i + 1).filter(isDayDone).length
+    const daysWalked = Array.from({ length: todayNum }, (_, i) => i + 1).filter(isDayCounted).length
 
     const bestStreak = (() => {
       let best = 0
       let run = 0
       for (let d = 1; d <= todayNum; d++) {
-        if (isDayDone(d)) { run++; if (run > best) best = run }
+        if (isDayCounted(d)) { run++; if (run > best) best = run }
         else run = 0
       }
       return best
@@ -55,7 +61,7 @@ export default function JourneyTab({ startDate, completions, todayNum, onSelectD
     const thisWeek = Math.max(1, Math.ceil(todayNum / 7))
     const weekFirst = (thisWeek - 1) * 7 + 1
     const thisWeekCount = Array.from({ length: 7 }, (_, i) => weekFirst + i)
-      .filter(d => d <= todayNum && isDayDone(d)).length
+      .filter(d => d <= todayNum && isDayCounted(d)).length
 
     let gridEnd = PROGRAM_DAYS + Math.ceil((todayNum - PROGRAM_DAYS) / 7) * 7
     if (gridEnd === todayNum) gridEnd += 7
