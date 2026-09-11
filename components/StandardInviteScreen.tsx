@@ -1,456 +1,103 @@
 'use client'
-import { useEffect, useState, useCallback, useMemo } from 'react'
-import type { User } from '@supabase/supabase-js'
-import { createClient } from '../lib/supabase'
-import {
-  COMMITMENTS, WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, APPROACH_NAMES, PROGRAM_DAYS,
-  today, parseLocalDate, dayNumber, weekNumber, dayKey, formatDate, weekRange, localDateStr,
-  LAUNCH_DATE, isBeforeLaunch, launchDateLabel
-} from '../lib/data'
-import StandardScreen from './StandardScreen'
-import TodayTab from './TodayTab'
-import WeeklyTab from './WeeklyTab'
-import JourneyTab from './JourneyTab'
-import PromiseTab from './PromiseTab'
-import ShareModal from './ShareModal'
-import InstallScreen from './InstallScreen'
-import NourishScreen from './NourishScreen'
-import DayCompleteScreen from './DayCompleteScreen'
-import StandardInviteScreen from './StandardInviteScreen'
-import HelpScreen from './HelpScreen'
+import { useState } from 'react'
 
-type Tab = 'today' | 'weekly' | 'journey' | 'promise'
-
-interface Profile {
-  name: string | null
-  start_date: string | null
-  nutrition_approach: string | null
-  nutrition_declaration: string | null
-  standard_entered_at: string | null
+interface Props {
+  onEnter: () => Promise<boolean>
+  onDone: () => void
+  beginsTomorrow: boolean
 }
 
-interface AppProps { user: User }
+export default function StandardInviteScreen({ onEnter, onDone, beginsTomorrow }: Props) {
+  const [entering, setEntering] = useState(false)
+  const [entered, setEntered] = useState(false)
 
-export default function App({ user }: AppProps) {
-  const supabase = createClient()
-
-  const [profile, setProfile] = useState<Profile>({ name: null, start_date: null, nutrition_approach: null, nutrition_declaration: null, standard_entered_at: null })
-  const [completions, setCompletions] = useState<Record<string, Record<string, boolean>>>({})
-  const [weeklyData, setWeeklyData] = useState<Record<number, Record<string, boolean>>>({})
-  const [startDate, setStartDate] = useState<Date | null>(null)
-  const [activeTab, setActiveTab] = useState<Tab>('today')
-  const [curDay, setCurDay] = useState(1)
-  const [curWeek, setCurWeek] = useState(1)
-  const [showStandard, setShowStandard] = useState(false)
-  const [showShare, setShowShare] = useState(false)
-  const [showInstall, setShowInstall] = useState(false)
-  const [showNourish, setShowNourish] = useState(false)
-  const [showDayComplete, setShowDayComplete] = useState(false)
-  const [showStandardInvite, setShowStandardInvite] = useState(false)
-  const [showHelp, setShowHelp] = useState(false)
-  const [completedDay, setCompletedDay] = useState(1)
-  const [loading, setLoading] = useState(true)
-  const [loadFailed, setLoadFailed] = useState(false)
-  const [dateCheck, setDateCheck] = useState(0)
-
-  useEffect(() => {
-    function onVisible() {
-      if (document.visibilityState === 'visible') setDateCheck(c => c + 1)
-    }
-    document.addEventListener('visibilitychange', onVisible)
-    return () => document.removeEventListener('visibilitychange', onVisible)
-  }, [])
-
-  const beforeLaunch = useMemo(() => isBeforeLaunch(), [dateCheck])
-  const launchLabel = useMemo(() => launchDateLabel(), [])
-
-  const loadData = useCallback(async () => {
-    setLoadFailed(false)
-    const [profileRes, completionsRes, weeklyRes] = await Promise.all([
-      supabase.from('user_profiles').select('*').eq('id', user.id).maybeSingle(),
-      supabase.from('daily_completions').select('*').eq('user_id', user.id),
-      supabase.from('weekly_data').select('*').eq('user_id', user.id),
-    ])
-
-    if (profileRes.error) {
-      setLoadFailed(true)
-      setLoading(false)
-      return
-    }
-
-    if (profileRes.data) {
-      setProfile(profileRes.data)
-      if (profileRes.data.start_date) {
-        const sd = parseLocalDate(profileRes.data.start_date)
-        const entered = !!profileRes.data.standard_entered_at
-        setStartDate(sd)
-        setCurDay(dayNumber(sd, today(), !entered))
-        setCurWeek(weekNumber(sd, !entered))
-        // Safety net: their 40 days are over but they have not stepped into
-        // The Standard yet, so the app opens on the invitation until they do.
-        if (!entered && dayNumber(sd, today(), false) > PROGRAM_DAYS) {
-          setShowStandardInvite(true)
-        }
-      }
-      if (!profileRes.data.name) setShowStandard(true)
-    } else {
-      setShowStandard(true)
-    }
-
-    if (completionsRes.data) {
-      const map: Record<string, Record<string, boolean>> = {}
-      completionsRes.data.forEach(row => {
-        if (!map[row.day_number]) map[row.day_number] = {}
-        map[row.day_number][row.commitment_id] = true
-      })
-      setCompletions(map)
-    }
-
-    if (weeklyRes.data) {
-      const map: Record<number, Record<string, boolean>> = {}
-      weeklyRes.data.forEach(row => {
-        map[row.week_number] = {
-          sabbath: row.sabbath,
-          scripture_memory: row.scripture_memory,
-          act_of_service: row.act_of_service,
-        }
-      })
-      setWeeklyData(map)
-    }
-
-    setLoading(false)
-  }, [user.id])
-
-  useEffect(() => { loadData() }, [loadData])
-
-  async function beginJourney(name: string) {
-    const { data: fresh, error } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle()
-
-    if (error) {
-      setLoadFailed(true)
-      return
-    }
-
-    const existingStart = fresh?.start_date ?? null
-    const alreadyStarted = !!existingStart
-    let sdStr = existingStart
-    if (!alreadyStarted && !beforeLaunch) sdStr = localDateStr(today())
-
-    await supabase.from('user_profiles').upsert({
-      id: user.id,
-      name: name || fresh?.name || profile.name,
-      start_date: sdStr,
-      nutrition_approach: fresh?.nutrition_approach ?? profile.nutrition_approach,
-      nutrition_declaration: fresh?.nutrition_declaration ?? profile.nutrition_declaration,
-    })
-
-    setProfile(p => ({
-      ...p,
-      name: name || fresh?.name || p.name,
-      start_date: sdStr,
-      nutrition_approach: fresh?.nutrition_approach ?? p.nutrition_approach,
-      nutrition_declaration: fresh?.nutrition_declaration ?? p.nutrition_declaration,
-    }))
-
-    if (sdStr) {
-      const sd = parseLocalDate(sdStr)
-      setStartDate(sd)
-      setCurDay(dayNumber(sd))
-      setCurWeek(weekNumber(sd))
-    }
-    setShowStandard(false)
-  }
-
-  function closeStandard() {
-    setShowStandard(false)
-  }
-
-  async function enterStandard(): Promise<boolean> {
-    const enteredAt = new Date().toISOString()
-    const { error } = await supabase
-      .from('user_profiles')
-      .update({ standard_entered_at: enteredAt })
-      .eq('id', user.id)
-
-    // If the save could not reach the server, the invitation stays put.
-    // The button comes back to life and they can simply tap again.
-    if (error) return false
-
-    setProfile(p => ({ ...p, standard_entered_at: enteredAt }))
-    setShowDayComplete(false)
-    if (startDate) {
-      setCurDay(dayNumber(startDate, today(), false))
-      setCurWeek(weekNumber(startDate, false))
-    }
-    setActiveTab('today')
-    // The invitation stays open: it now shows the closing word, and its
-    // own button dismisses it.
-    return true
-  }
-
-  async function toggleCommitment(dayNum: number, commitmentId: string) {
-    if (!startDate) return
-    // Uncapped for people in The Standard, so Day 41 and beyond stay checkable.
-    const todayNum = dayNumber(startDate, today(), !profile.standard_entered_at)
-    if (dayNum > todayNum) return
-
-    const currentlyDone = completions[dayNum]?.[commitmentId] ?? false
-    const newValue = !currentlyDone
-
-    setCompletions(prev => ({
-      ...prev,
-      [dayNum]: { ...prev[dayNum], [commitmentId]: newValue }
-    }))
-
-    if (newValue) {
-      await supabase.from('daily_completions').upsert({
-        user_id: user.id,
-        day_number: dayNum,
-        commitment_id: commitmentId,
-        completed_at: dayKey(startDate, dayNum),
-      }, { onConflict: 'user_id,day_number,commitment_id' })
-    } else {
-      await supabase.from('daily_completions').delete()
-        .eq('user_id', user.id)
-        .eq('day_number', dayNum)
-        .eq('commitment_id', commitmentId)
-    }
-
-    const updatedDay = { ...completions[dayNum], [commitmentId]: newValue }
-    const allDone = COMMITMENTS.every(c => updatedDay[c.id])
-    if (allDone && newValue) {
-      setTimeout(() => {
-        setCompletedDay(dayNum)
-        setShowDayComplete(true)
-      }, 600)
+  async function handleEnter() {
+    if (entering) return
+    setEntering(true)
+    try {
+      const ok = await onEnter()
+      if (ok) setEntered(true)
+    } finally {
+      setEntering(false)
     }
   }
 
-  async function toggleWeekly(weekNum: number, commitmentId: string) {
-    if (!startDate) return
-    if (weekNum > weekNumber(startDate, !profile.standard_entered_at)) return
-
-    const currentlyDone = weeklyData[weekNum]?.[commitmentId] ?? false
-    const newValue = !currentlyDone
-
-    setWeeklyData(prev => ({
-      ...prev,
-      [weekNum]: { ...prev[weekNum], [commitmentId]: newValue }
-    }))
-
-    const current = weeklyData[weekNum] || {}
-    await supabase.from('weekly_data').upsert({
-      user_id: user.id,
-      week_number: weekNum,
-      sabbath: commitmentId === 'sabbath' ? newValue : (current.sabbath ?? false),
-      scripture_memory: commitmentId === 'scripture_memory' ? newValue : (current.scripture_memory ?? false),
-      act_of_service: commitmentId === 'act_of_service' ? newValue : (current.act_of_service ?? false),
-    }, { onConflict: 'user_id,week_number' })
-  }
-
-  async function saveNutrition(approach: string, declaration: string) {
-    const { data: fresh, error } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', user.id)
-      .maybeSingle()
-
-    if (error) {
-      setLoadFailed(true)
-      return
-    }
-
-    await supabase.from('user_profiles').upsert({
-      id: user.id,
-      name: fresh?.name ?? profile.name,
-      start_date: fresh?.start_date ?? profile.start_date,
-      nutrition_approach: approach,
-      nutrition_declaration: declaration,
-    })
-
-    setProfile(p => ({
-      ...p,
-      name: fresh?.name ?? p.name,
-      start_date: fresh?.start_date ?? p.start_date,
-      nutrition_approach: approach,
-      nutrition_declaration: declaration,
-    }))
-  }
-
-  if (loading) {
+  if (entered) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0a0a0a' }}>
-        <div style={{ width: 24, height: 24, border: '2px solid rgba(255,255,255,0.08)', borderTopColor: '#c41e1e', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-      </div>
-    )
-  }
-
-  if (loadFailed) {
-    return (
-      <div className="load-fail">
-        <img src="/logo.png" alt="40 Elevated" />
-        <div className="lf-title">Cannot reach your walk.</div>
-        <div className="lf-sub">Check your connection and try again. Nothing has been lost.</div>
-        <button type="button" className="lf-btn" onClick={() => { setLoading(true); loadData() }}>Try again</button>
+      <div className="si-screen" id="standard-entered-screen">
+        <div className="si-inner">
+          <img src="/the-standard.png" alt="The Standard" className="si-logo" />
+          <div className="si-title">The Standard begins <span className="si-red">{beginsTomorrow ? 'tomorrow.' : 'today.'}</span></div>
+          {beginsTomorrow ? (
+            <div className="si-body">
+              Tonight you finished the 40. At midnight, Day 1 of the walk that does not
+              end begins. <strong>Rest well. Come back in the morning and seek Him first.</strong>
+            </div>
+          ) : (
+            <div className="si-body">
+              The 40 days are behind you and the walk kept going.
+              <strong> It picks up right where you stand. Seek Him first, starting now.</strong>
+            </div>
+          )}
+          <div className="si-divider" />
+          <div className="si-verse">&ldquo;His compassions fail not. They are new every morning; great is Your faithfulness.&rdquo;</div>
+          <div className="si-ref">Lamentations 3:22-23 (NKJV)</div>
+          <button type="button" className="si-btn-quiet" onClick={onDone}>
+            {beginsTomorrow ? 'See you in the morning.' : 'Begin today.'}
+          </button>
+        </div>
         <style>{`
-          .load-fail { min-height: 100vh; background: #0a0a0a; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-          .load-fail img { width: 180px; height: auto; margin-bottom: 40px; }
-          .lf-title { font-size: 26px; font-weight: 300; color: #ffffff; margin-bottom: 12px; }
-          .lf-sub { font-size: 15px; color: #888; line-height: 1.65; margin-bottom: 32px; max-width: 300px; }
-          .lf-btn { padding: 15px 36px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+          .si-screen { position: fixed; inset: 0; background: #0a0a0a; display: flex; align-items: center; justify-content: center; z-index: 300; overflow-y: auto; }
+          .si-inner { padding: 44px 30px; max-width: 420px; width: 100%; text-align: center; }
+          .si-logo { width: 230px; height: auto; display: block; margin: 0 auto 22px; }
+          .si-title { font-size: 27px; font-weight: 800; color: #ffffff; margin-bottom: 16px; letter-spacing: -0.01em; line-height: 1.2; }
+          .si-red { color: #e02020; }
+          .si-body { font-size: 14.5px; color: #888; line-height: 1.85; margin-bottom: 24px; }
+          .si-body strong { color: #f5f0ed; font-weight: 600; }
+          .si-divider { width: 40px; height: 0.5px; background: rgba(196,30,30,0.4); margin: 0 auto 20px; }
+          .si-verse { font-size: 15.5px; font-style: italic; color: #f5f0ed; line-height: 1.65; margin-bottom: 8px; }
+          .si-ref { font-size: 12px; color: #c41e1e; letter-spacing: 0.08em; margin-bottom: 30px; }
+          .si-btn-quiet { width: 100%; padding: 16px; background: none; border: 0.5px solid rgba(255,255,255,0.12); border-radius: 10px; color: #888; font-size: 14px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
         `}</style>
       </div>
     )
   }
 
-  const locked = !startDate
-  const displayDate = startDate ?? (beforeLaunch ? parseLocalDate(LAUNCH_DATE) : today())
-  const inStandard = !!profile.standard_entered_at
-  const todayNum = startDate ? dayNumber(startDate, today(), !inStandard) : 1
-
   return (
-    <div className="app">
-      {showStandard && (
-        <StandardScreen
-          onBegin={beginJourney}
-          onClose={closeStandard}
-          onShowNourish={() => setShowNourish(true)}
-          hasStarted={!!startDate}
-          savedName={profile.name}
-          beforeLaunch={beforeLaunch}
-          launchLabel={launchLabel}
-        />
-      )}
-
-      <div className="header" style={{ position: 'relative' }}>
-        <img src={inStandard ? '/the-standard.png' : '/logo.png'} alt={inStandard ? 'The Standard' : '40 Elevated'} style={{ width: 160, height: 'auto', display: 'block', margin: '0 auto' }} />
-        <button className="share-btn" onClick={() => setShowShare(true)} aria-label="Share">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/>
-          </svg>
+    <div className="si-screen" id="standard-invite-screen">
+      <div className="si-inner">
+        <img src="/the-standard.png" alt="The Standard" className="si-logo" />
+        <div className="si-title">The 40 days were never the finish line.</div>
+        <div className="si-body">
+          They were the training ground. Over these 40 days you built a daily walk with
+          Christ. You saw Him move. You were changed.{' '}
+          <strong>That walk does not end today. It becomes the standard for your life.</strong>
+        </div>
+        <div className="si-divider" />
+        <div className="si-verse">&ldquo;As you therefore have received Christ Jesus the Lord, so walk in Him.&rdquo;</div>
+        <div className="si-ref">Colossians 2:6 (NKJV)</div>
+        <button type="button" className="si-btn" onClick={handleEnter} disabled={entering}>
+          {entering ? 'One moment...' : 'Enter The Standard'}
         </button>
+        <div className="si-note">
+          Same daily commitments. Same weekly practices. No finish line.
+          Your 40-day journey stays saved in your Journey tab.
+        </div>
       </div>
-
-      <div className="tabs">
-        {(['today', 'weekly', 'journey', 'promise'] as Tab[]).map(tab => (
-          <button key={tab} className={`tab ${activeTab === tab ? 'active' : ''}`} onClick={() => setActiveTab(tab)}>
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      <div className="tab-content">
-        {locked && (
-          <div className="preview-banner">
-            <div className="pb-eyebrow">Preview</div>
-            {beforeLaunch ? (
-              <>
-                <div className="pb-date">Your walk begins {launchLabel}</div>
-                <div className="pb-note">Look around as much as you like. The Start button appears on the {launchLabel.split(' ').slice(-1)}.</div>
-              </>
-            ) : (
-              <>
-                <div className="pb-date">You have not begun yet</div>
-                <div className="pb-note">Look around as much as you like. Nothing counts until you start.</div>
-                <button type="button" className="pb-btn" onClick={() => beginJourney(profile.name || '')}>
-                  Start My Walk With Christ
-                </button>
-              </>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'today' && (
-          <TodayTab
-            curDay={curDay}
-            todayNum={todayNum}
-            startDate={displayDate}
-            completions={completions}
-            nutritionApproach={profile.nutrition_approach}
-            onToggle={toggleCommitment}
-            onChangeDay={setCurDay}
-            onShowInstall={() => setShowInstall(true)}
-            onReturnToStandard={() => setShowStandard(true)}
-            weeklyVerses={WEEKLY_VERSES}
-            weekNum={startDate ? weekNumber(startDate) : 1}
-            locked={locked}
-          />
-        )}
-        {activeTab === 'weekly' && (
-          <WeeklyTab
-            curWeek={curWeek}
-            completions={completions}
-            inStandard={inStandard}
-            startDate={displayDate}
-            weeklyData={weeklyData}
-            onToggle={toggleWeekly}
-            onChangeWeek={setCurWeek}
-            onReturnToStandard={() => setShowStandard(true)}
-            locked={locked}
-          />
-        )}
-        {activeTab === 'journey' && (
-          <JourneyTab
-            startDate={displayDate}
-            completions={completions}
-            todayNum={todayNum}
-            onSelectDay={(day) => { setCurDay(day); setActiveTab('today') }}
-            onReturnToStandard={() => setShowStandard(true)}
-            locked={locked}
-          />
-        )}
-        {activeTab === 'promise' && (
-          <PromiseTab onReturnToStandard={() => setShowStandard(true)} />
-        )}
-
-        <button type="button" className="help-trigger" onClick={() => setShowHelp(true)}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="2" />
-            <path d="m2 7 10 6 10-6" />
-          </svg>
-          <span>Help?</span>
-        </button>
-      </div>
-
-      {showShare && <ShareModal onClose={() => setShowShare(false)} />}
-      {showInstall && <InstallScreen onClose={() => setShowInstall(false)} />}
-      {showHelp && <HelpScreen onClose={() => setShowHelp(false)} />}
-      {showNourish && (
-        <NourishScreen
-          approach={profile.nutrition_approach || ''}
-          declaration={profile.nutrition_declaration || ''}
-          onSave={saveNutrition}
-          onClose={() => setShowNourish(false)}
-        />
-      )}
-      {showDayComplete && (
-        <DayCompleteScreen
-          day={completedDay}
-          onClose={() => setShowDayComplete(false)}
-          onBeginStandard={() => { setShowDayComplete(false); setShowStandardInvite(true) }}
-        />
-      )}
-      {showStandardInvite && (
-        <StandardInviteScreen
-          onEnter={enterStandard}
-          onDone={() => setShowStandardInvite(false)}
-          beginsTomorrow={!startDate || dayNumber(startDate, today(), false) <= PROGRAM_DAYS}
-        />
-      )}
-
       <style>{`
-        .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-        .help-trigger:active { border-color: rgba(196,30,30,0.4); color: #e33; }
-        .preview-banner { border: 0.5px solid rgba(196,30,30,0.35); background: rgba(196,30,30,0.06); border-radius: 12px; padding: 15px 16px; text-align: center; margin-bottom: 18px; }
-        .pb-eyebrow { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: #e33; margin-bottom: 7px; }
-        .pb-date { font-size: 16px; font-weight: 400; color: #ffffff; margin-bottom: 6px; }
-        .pb-note { font-size: 11px; color: #888; line-height: 1.6; }
-        .pb-btn { display: block; width: 100%; padding: 14px; background: #c41e1e; color: #ffffff; border: none; border-radius: 10px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 12px; }
-        .pb-btn:active { background: #8b1515; }
+        .si-screen { position: fixed; inset: 0; background: #0a0a0a; display: flex; align-items: center; justify-content: center; z-index: 300; overflow-y: auto; }
+        .si-inner { padding: 44px 30px; max-width: 420px; width: 100%; text-align: center; }
+        .si-logo { width: 230px; height: auto; display: block; margin: 0 auto 22px; }
+        .si-title { font-size: 27px; font-weight: 800; color: #ffffff; margin-bottom: 16px; letter-spacing: -0.01em; line-height: 1.2; }
+        .si-body { font-size: 14.5px; color: #888; line-height: 1.85; margin-bottom: 24px; }
+        .si-body strong { color: #f5f0ed; font-weight: 600; }
+        .si-divider { width: 40px; height: 0.5px; background: rgba(196,30,30,0.4); margin: 0 auto 20px; }
+        .si-verse { font-size: 16px; font-style: italic; color: #f5f0ed; line-height: 1.65; margin-bottom: 8px; }
+        .si-ref { font-size: 12px; color: #c41e1e; letter-spacing: 0.08em; margin-bottom: 30px; }
+        .si-btn { width: 100%; padding: 16px; background: #c41e1e; color: #ffffff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; margin-bottom: 14px; }
+        .si-btn:active { background: #8b1515; }
+        .si-btn:disabled { opacity: 0.6; }
+        .si-note { font-size: 12.5px; color: #555; line-height: 1.6; }
       `}</style>
     </div>
   )
