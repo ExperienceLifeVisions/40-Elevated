@@ -169,25 +169,27 @@ export default function App({ user }: AppProps) {
     setShowStandard(false)
   }
 
-  async function enterStandard() {
+  async function enterStandard(): Promise<boolean> {
     const enteredAt = new Date().toISOString()
     const { error } = await supabase
       .from('user_profiles')
       .update({ standard_entered_at: enteredAt })
       .eq('id', user.id)
 
-    // If the save could not reach the server, leave the invitation open.
+    // If the save could not reach the server, the invitation stays put.
     // The button comes back to life and they can simply tap again.
-    if (error) return
+    if (error) return false
 
     setProfile(p => ({ ...p, standard_entered_at: enteredAt }))
-    setShowStandardInvite(false)
     setShowDayComplete(false)
     if (startDate) {
       setCurDay(dayNumber(startDate, today(), false))
       setCurWeek(weekNumber(startDate, false))
     }
     setActiveTab('today')
+    // The invitation stays open: it now shows the closing word, and its
+    // own button dismisses it.
+    return true
   }
 
   async function toggleCommitment(dayNum: number, commitmentId: string) {
@@ -432,7 +434,13 @@ export default function App({ user }: AppProps) {
           onBeginStandard={() => { setShowDayComplete(false); setShowStandardInvite(true) }}
         />
       )}
-      {showStandardInvite && <StandardInviteScreen onEnter={enterStandard} />}
+      {showStandardInvite && (
+        <StandardInviteScreen
+          onEnter={enterStandard}
+          onDone={() => setShowStandardInvite(false)}
+          beginsTomorrow={!startDate || dayNumber(startDate, today(), false) <= PROGRAM_DAYS}
+        />
+      )}
 
       <style>{`
         .help-trigger { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 26px auto 8px; padding: 11px 20px; background: none; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; color: #888; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
