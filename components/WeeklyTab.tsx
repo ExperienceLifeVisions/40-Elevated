@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '../lib/supabase'
-import { WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, COMMITMENTS, weekRange, weekNumber, dayNumber, today, PROGRAM_WEEKS } from '../lib/data'
+import { WEEKLY_COMMITMENTS, WEEKLY_VERSES, FRUIT_DATA, COMMITMENTS, weekRange, weekNumber, dayNumber, today, PROGRAM_WEEKS, PROGRAM_DAYS } from '../lib/data'
 
 interface Props {
   curWeek: number
@@ -71,7 +71,7 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
   }
 
   // ─────────────────────────────────────────────────────────────
-  // THE STANDARD VIEW: week strip, chosen verse, weekly practices
+  // THE STANDARD VIEW: streak chips, chosen verse, weekly practices
   // ─────────────────────────────────────────────────────────────
   if (inStandard && !locked) {
     const wd = weeklyData[thisWeek] || {}
@@ -81,27 +81,32 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
     weekEnd.setDate(weekEnd.getDate() + 6)
     const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
-    const stripDays = Array.from({ length: 7 }, (_, i) => {
-      const dayN = (thisWeek - 1) * 7 + i + 1
-      const date = new Date(startDate)
-      date.setDate(date.getDate() + dayN - 1)
-      const dc = completions[dayN] || {}
-      // A day counts when they showed up and did even one thing.
-      const isDone = COMMITMENTS.some(c => dc[c.id])
-      return {
-        dayN,
-        letter: date.toLocaleDateString('en-US', { weekday: 'narrow' }),
-        num: date.getDate(),
-        done: isDone,
-        isToday: dayN === todayNum,
+    // A day counts when they showed up and did even one thing.
+    const dayCounted = (d: number) => {
+      const dc = completions[d] || {}
+      return COMMITMENTS.some(c => dc[c.id])
+    }
+
+    // The Standard's ledger begins at Day 41. The first 40 days keep their
+    // own record inside The First 40 on the Journey tab.
+    const weekFirst = (thisWeek - 1) * 7 + 1
+    const thisWeekCount = Array.from({ length: 7 }, (_, i) => weekFirst + i)
+      .filter(d => d > PROGRAM_DAYS && d <= todayNum && dayCounted(d)).length
+
+    const bestStreak = (() => {
+      let best = 0
+      let run = 0
+      for (let d = PROGRAM_DAYS + 1; d <= todayNum; d++) {
+        if (dayCounted(d)) { run++; if (run > best) best = run }
+        else run = 0
       }
-    })
+      return best
+    })()
 
     const streak = (() => {
       let s = 0
-      for (let d = todayNum; d >= 1; d--) {
-        const dc = completions[d] || {}
-        if (COMMITMENTS.some(c => dc[c.id])) s++
+      for (let d = todayNum; d > PROGRAM_DAYS; d--) {
+        if (dayCounted(d)) s++
         else if (d === todayNum) continue
         else break
       }
@@ -112,20 +117,23 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
 
     return (
       <div id="tab-weekly">
-        <div className="ws-header">
-          <div className="ws-title">This Week</div>
-          <div className="ws-range">{fmt(weekStart)} to {fmt(weekEnd)}</div>
+        <div className="ws-chips">
+          <div className="ws-chip">
+            <div className="ws-chip-num red">{streak}</div>
+            <div className="ws-chip-cap">Streak</div>
+          </div>
+          <div className="ws-chip">
+            <div className="ws-chip-num">{thisWeekCount}/7</div>
+            <div className="ws-chip-cap">This week</div>
+          </div>
+          <div className="ws-chip">
+            <div className="ws-chip-num">{bestStreak}</div>
+            <div className="ws-chip-cap">Best</div>
+          </div>
         </div>
-        <div className="ws-strip">
-          {stripDays.map(d => (
-            <div key={d.dayN} className="ws-day">
-              <div className="ws-letter">{d.letter}</div>
-              <div className={`ws-cell ${d.done ? 'done' : ''} ${d.isToday ? 'today' : ''}`}>{d.num}</div>
-            </div>
-          ))}
-        </div>
-        {streak > 0 && (
-          <div className="ws-streak"><strong>{streak} {streak === 1 ? 'day' : 'days'}</strong> in a row and counting</div>
+        <div className="ws-chips-range">{fmt(weekStart)} to {fmt(weekEnd)}</div>
+        {bestStreak === 0 && (
+          <div className="ws-begins">Day 1 of your walk begins tomorrow.</div>
         )}
 
         <div className="section-label">Scripture memory</div>
@@ -196,18 +204,13 @@ export default function WeeklyTab({ curWeek, startDate, weeklyData, onToggle, on
         </button>
 
         <style>{`
-          .ws-header { text-align: center; margin-bottom: 12px; }
-          .ws-title { font-size: 22px; font-weight: 800; color: #ffffff; }
-          .ws-range { font-size: 13px; color: #888; margin-top: 3px; }
-          .ws-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 4px; }
-          .ws-day { text-align: center; }
-          .ws-letter { font-size: 11px; color: #555; letter-spacing: 0.06em; margin-bottom: 5px; text-transform: uppercase; }
-          .ws-cell { aspect-ratio: 1; border-radius: 50%; border: 0.5px solid rgba(255,255,255,0.08); background: #141414; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #888; }
-          .ws-cell.done { background: #c41e1e; border-color: #c41e1e; color: #ffffff; }
-          .ws-cell.today { border-color: #c41e1e; color: #e02020; }
-          .ws-cell.done.today { color: #ffffff; }
-          .ws-streak { text-align: center; font-size: 13px; color: #888; margin: 8px 0 4px; }
-          .ws-streak strong { color: #e02020; }
+          .ws-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; max-width: 420px; margin: 0 auto; }
+          .ws-chip { background: #141414; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 11px; padding: 11px 8px; text-align: center; }
+          .ws-chip-num { font-size: 22px; font-weight: 800; color: #ffffff; line-height: 1; letter-spacing: -0.01em; }
+          .ws-chip-num.red { color: #e02020; }
+          .ws-chip-cap { font-size: 10.5px; color: #888; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+          .ws-chips-range { text-align: center; font-size: 11.5px; color: #555; letter-spacing: 0.06em; margin: 8px 0 2px; }
+          .ws-begins { text-align: center; font-size: 12.5px; color: #888; margin-top: 8px; font-style: italic; }
           .ws-verse-entry { background: #141414; border: 0.5px solid rgba(196,30,30,0.4); border-radius: 13px; padding: 16px; margin-bottom: 9px; }
           .ws-verse-prompt { font-size: 13.5px; color: #888; line-height: 1.55; margin-bottom: 12px; }
           .ws-verse-input { width: 100%; box-sizing: border-box; background: #0a0a0a; border: 0.5px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px; color: #f5f0ed; font-size: 14px; font-style: italic; margin-bottom: 8px; font-family: inherit; resize: none; }
